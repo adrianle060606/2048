@@ -6,7 +6,7 @@ import copy
 import time
 import math
 
-pygame.init()
+pygame.init() 
 # comment at the start of each method a description
 # use name mangling to encapsulate code
 # use inheritance

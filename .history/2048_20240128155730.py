@@ -6,12 +6,8 @@ import copy
 import time
 import math
 
-pygame.init()
-# comment at the start of each method a description
-# use name mangling to encapsulate code
-# use inheritance
-# game manager class
-
+pygame.init() 
+  
 # CREATING CANVAS 
 screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
   
@@ -231,16 +227,12 @@ class Board(object):
     def handle_keys(self, event):
         if event.key == pygame.K_LEFT:
             self.move((-1, 0))
-            self.in_keydown = True
         elif event.key == pygame.K_RIGHT:
             self.move((1, 0))
-            self.in_keydown = True
         elif event.key == pygame.K_DOWN:
             self.move((0, 1))
-            self.in_keydown = True
         elif event.key == pygame.K_UP:
             self.move((0, -1))
-            self.in_keydown = True
 
 
     def draw(self, surface):
@@ -279,7 +271,7 @@ while not exit:
             exit = True
         elif event.type == pygame.KEYDOWN and not board.in_animation:
             board.handle_keys(event)
-    board.in_keydown = False
+
     
     #draw background
     screen.fill(background_white)

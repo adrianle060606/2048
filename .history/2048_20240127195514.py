@@ -6,12 +6,8 @@ import copy
 import time
 import math
 
-pygame.init()
-# comment at the start of each method a description
-# use name mangling to encapsulate code
-# use inheritance
-# game manager class
-
+pygame.init() 
+  
 # CREATING CANVAS 
 screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
   
@@ -49,11 +45,9 @@ exit = False
 class Board(object):
     def __init__(self, surface):
         # 0 --> empty, 1 --> 2, 2 --> 4, 3 --> 8 etc.
-        self.state = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
-        self.new_piece()
-        self.new_piece()
-        self.score = 0
-        self.in_keydown = False
+        self.state = [[1,0,0,1], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
+        #self.new_piece()
+        #self.new_piece()
         self.surface = surface
         self.draw(surface)
         self.in_animation = False
@@ -119,7 +113,6 @@ class Board(object):
                                 tile_value += 1
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
-                                self.score += 2**abs(tile_value)
 
                             # if passes collision detection then move
                             valid_move = True
@@ -231,16 +224,12 @@ class Board(object):
     def handle_keys(self, event):
         if event.key == pygame.K_LEFT:
             self.move((-1, 0))
-            self.in_keydown = True
-        elif event.key == pygame.K_RIGHT:
+        if event.key == pygame.K_RIGHT:
             self.move((1, 0))
-            self.in_keydown = True
-        elif event.key == pygame.K_DOWN:
+        if event.key == pygame.K_DOWN:
             self.move((0, 1))
-            self.in_keydown = True
-        elif event.key == pygame.K_UP:
+        if event.key == pygame.K_UP:
             self.move((0, -1))
-            self.in_keydown = True
 
 
     def draw(self, surface):
@@ -279,7 +268,7 @@ while not exit:
             exit = True
         elif event.type == pygame.KEYDOWN and not board.in_animation:
             board.handle_keys(event)
-    board.in_keydown = False
+
     
     #draw background
     screen.fill(background_white)
@@ -296,26 +285,12 @@ while not exit:
 
     #draw score menu
     pygame.draw.rect(screen, background_grey, pygame.Rect((400, 50, 100, 50)))
-    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 15)
-    text = font.render("Score:", True, white)
+    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.HEADING_SIZE)
+    text = font.render("Score:", True, text_grey)
     textRect = text.get_rect()
-    textRect.center = (450, 60)
-    screen.blit(text, textRect)
-
-    text = font.render(str(board.score), True, white)
-    textRect = text.get_rect()
-    textRect.center = (450, 80)
+    textRect.center = (400, 50)
     screen.blit(text, textRect)
     
-    #draw restart button
-    pygame.draw.rect(screen, background_grey, pygame.Rect((600, 50, 100, 50)))
-    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
-    text = font.render("Restart", True, white)
-    textRect = text.get_rect()
-    textRect.center = (650, 60)
-    screen.blit(text, textRect)
-
-
 
     #draw board and tiles
     board.draw(screen)

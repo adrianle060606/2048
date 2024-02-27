@@ -6,12 +6,8 @@ import copy
 import time
 import math
 
-pygame.init()
-# comment at the start of each method a description
-# use name mangling to encapsulate code
-# use inheritance
-# game manager class
-
+pygame.init() 
+  
 # CREATING CANVAS 
 screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
   
