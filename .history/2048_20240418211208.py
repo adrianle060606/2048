@@ -420,7 +420,6 @@ class Board(object):
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
@@ -434,7 +433,7 @@ class Board(object):
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.score]))
+                csvwriter.writerow([self.score])
                 # writing the data rows   
                 csvwriter.writerows(self.state) 
             self.saving = False

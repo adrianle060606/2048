@@ -56,6 +56,4 @@ HOME_BTN = (100, 135, 120, 40)
 SAVE_BTN = (275, 135, 120, 40)
 RESTART_BTN = (450, 135, 120, 40)
 
-HIGHSCORE_FILE = "highscore.txt"
-
 

@@ -21,7 +21,6 @@ class gameManager():
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
         self.board = Board(self.screen)
         self.csv_file = "board.csv"
-        
         pygame.display.set_caption("2048") 
 
     def run(self):
@@ -70,11 +69,6 @@ class gameManager():
                 
                 if self.board.saving:
                     self.board.save(self.csv_file)
-                if self.board.save_delay <= 0:
-                    self.board.save_colour = constants.WHITE
-                    self.board.save_status = "Save"
-                else:
-                    self.board.save_delay -= 1/constants.CLOCK_SPEED
 
                 #draw background
                 self.screen.fill(constants.BACKGROUND_WHITE)
@@ -88,38 +82,18 @@ class gameManager():
                 self.screen.blit(text, textRect)
 
                 #draw score menu
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((350, 40, 100, 60)))
+                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((400, 50, 100, 50)))
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
                 text = font.render("Score:", True, constants.WHITE)
                 textRect = text.get_rect()
-                textRect.center = (400, 50)
-                self.screen.blit(text, textRect)
-
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.board.score}", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (400, 75)
-                self.screen.blit(text, textRect)
-
-                #highscore menu
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((480, 40, 100, 60)))
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 18)
-                text = font.render("Highscore:", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (530, 50)
-                self.screen.blit(text, textRect)
-
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.board.highscore}", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (530, 75)
+                textRect.center = (450, 60)
                 self.screen.blit(text, textRect)
 
                 #draw restart button
                 self.draw_button(constants.RESTART_BTN, constants.BROWN, 20, constants.WHITE, "Restart")
 
                 #draw save button
-                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.board.save_colour, self.board.save_status)
+                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, constants.WHITE, self.board.save_status)
 
                 #draw back button
                 self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
@@ -127,12 +101,10 @@ class gameManager():
                 #draw board and tiles
                 self.board.draw(self.screen)
                 self.board.animate_tiles()
-
-                
                 
 
             pygame.display.update()
-            self.clock.tick(constants.CLOCK_SPEED)
+            self.clock.tick(40)
 
     def handle_btns(self, pos):
         # decides which buttons are pressed based on mouse pos
@@ -197,15 +169,12 @@ class Board(object):
         self.new_piece()
         self.new_piece()
         self.score = 0
-        self.highscore = self.read_highscore()
         self.in_keydown = False
         self.surface = surface
         self.in_animation = False
         self.animations = []
         self.saving = False
         self.save_status = "Save"
-        self.save_colour = constants.WHITE
-        self.save_delay = 0
 
     def move(self, direction):
 
@@ -268,7 +237,6 @@ class Board(object):
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
                                 self.score += 2**abs(tile_value)
-                                self.update_highscore()
 
                             # if passes collision detection then move
                             valid_move = True
@@ -420,7 +388,6 @@ class Board(object):
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
@@ -434,27 +401,14 @@ class Board(object):
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.score]))
+                    
                 # writing the data rows   
                 csvwriter.writerows(self.state) 
             self.saving = False
-            self.save_status = "Saved!"
-            self.save_colour = constants.GREEN
-            self.save_delay = constants.SAVE_ANIMATION_DELAY
+            self.save_status = "Success"
 
     def restart(self):
         self.__init__(self.surface)
-
-    def read_highscore(self):
-        with open(constants.HIGHSCORE_FILE, "r") as file:
-            return int(file.read())
-    
-    def update_highscore(self):
-        # checks if new highscore and writes it to file
-        if self.score > self.highscore:
-            self.highscore = self.score
-            with open(constants.HIGHSCORE_FILE, "w") as file:
-                file.write(f"{self.highscore}")
 
 game = gameManager()
 game.run()

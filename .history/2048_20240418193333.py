@@ -88,31 +88,11 @@ class gameManager():
                 self.screen.blit(text, textRect)
 
                 #draw score menu
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((350, 40, 100, 60)))
+                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((400, 50, 100, 50)))
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
                 text = font.render("Score:", True, constants.WHITE)
                 textRect = text.get_rect()
-                textRect.center = (400, 50)
-                self.screen.blit(text, textRect)
-
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.board.score}", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (400, 75)
-                self.screen.blit(text, textRect)
-
-                #highscore menu
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((480, 40, 100, 60)))
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 18)
-                text = font.render("Highscore:", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (530, 50)
-                self.screen.blit(text, textRect)
-
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.board.highscore}", True, constants.WHITE)
-                textRect = text.get_rect()
-                textRect.center = (530, 75)
+                textRect.center = (450, 60)
                 self.screen.blit(text, textRect)
 
                 #draw restart button
@@ -197,7 +177,6 @@ class Board(object):
         self.new_piece()
         self.new_piece()
         self.score = 0
-        self.highscore = self.read_highscore()
         self.in_keydown = False
         self.surface = surface
         self.in_animation = False
@@ -268,7 +247,6 @@ class Board(object):
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
                                 self.score += 2**abs(tile_value)
-                                self.update_highscore()
 
                             # if passes collision detection then move
                             valid_move = True
@@ -420,7 +398,6 @@ class Board(object):
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
@@ -434,27 +411,15 @@ class Board(object):
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.score]))
+                    
                 # writing the data rows   
                 csvwriter.writerows(self.state) 
             self.saving = False
             self.save_status = "Saved!"
             self.save_colour = constants.GREEN
-            self.save_delay = constants.SAVE_ANIMATION_DELAY
 
     def restart(self):
         self.__init__(self.surface)
-
-    def read_highscore(self):
-        with open(constants.HIGHSCORE_FILE, "r") as file:
-            return int(file.read())
-    
-    def update_highscore(self):
-        # checks if new highscore and writes it to file
-        if self.score > self.highscore:
-            self.highscore = self.score
-            with open(constants.HIGHSCORE_FILE, "w") as file:
-                file.write(f"{self.highscore}")
 
 game = gameManager()
 game.run()

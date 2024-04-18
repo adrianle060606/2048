@@ -197,7 +197,7 @@ class Board(object):
         self.new_piece()
         self.new_piece()
         self.score = 0
-        self.highscore = self.read_highscore()
+        self.highscore = 10
         self.in_keydown = False
         self.surface = surface
         self.in_animation = False
@@ -420,7 +420,6 @@ class Board(object):
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
@@ -434,7 +433,7 @@ class Board(object):
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.score]))
+                    
                 # writing the data rows   
                 csvwriter.writerows(self.state) 
             self.saving = False
@@ -445,16 +444,13 @@ class Board(object):
     def restart(self):
         self.__init__(self.surface)
 
-    def read_highscore(self):
-        with open(constants.HIGHSCORE_FILE, "r") as file:
-            return int(file.read())
-    
     def update_highscore(self):
         # checks if new highscore and writes it to file
         if self.score > self.highscore:
             self.highscore = self.score
-            with open(constants.HIGHSCORE_FILE, "w") as file:
-                file.write(f"{self.highscore}")
+            with open("highscore.csv") as file:
+                csvwriter = csv.writer(file)
+                csvwriter.writerow([self.highscore])
 
 game = gameManager()
 game.run()

@@ -197,7 +197,7 @@ class Board(object):
         self.new_piece()
         self.new_piece()
         self.score = 0
-        self.highscore = self.read_highscore()
+        self.highscore = 10
         self.in_keydown = False
         self.surface = surface
         self.in_animation = False
@@ -420,7 +420,6 @@ class Board(object):
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
@@ -434,7 +433,7 @@ class Board(object):
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.score]))
+                    
                 # writing the data rows   
                 csvwriter.writerows(self.state) 
             self.saving = False
