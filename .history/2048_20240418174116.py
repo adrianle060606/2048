@@ -52,7 +52,7 @@ class gameManager():
                 self.draw_button(constants.LOAD_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Load Game")
 
                 #draw help button
-                self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Guide")
+                self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Help")
 
             else:
                 

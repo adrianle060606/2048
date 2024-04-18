@@ -46,13 +46,28 @@ class gameManager():
                 self.screen.blit(text, textRect)
 
                 #draw play button
-                self.draw_button(constants.PLAY_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Play")
+                pygame.draw.rect(self.screen, constants.TILE_COLOURS[11], pygame.Rect(constants.PLAY_BTN), 0, 5)
+                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 30)
+                text = font.render("Play", True, constants.WHITE)
+                textRect = text.get_rect()
+                textRect.center = (0.5*(2*constants.PLAY_BTN[0] + constants.PLAY_BTN[2]), 0.5*(2*constants.PLAY_BTN[1] + constants.PLAY_BTN[3]))
+                self.screen.blit(text, textRect)
 
                 #draw load button
-                self.draw_button(constants.LOAD_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Load Game")
+                pygame.draw.rect(self.screen, constants.TILE_COLOURS[11], pygame.Rect(constants.LOAD_BTN), 0, 5)
+                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 30)
+                text = font.render("Load Game", True, constants.WHITE)
+                textRect = text.get_rect()
+                textRect.center = (0.5*(2*constants.LOAD_BTN[0] + constants.LOAD_BTN[2]), 0.5*(2*constants.LOAD_BTN[1] + constants.LOAD_BTN[3]))
+                self.screen.blit(text, textRect)
 
                 #draw help button
-                self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Guide")
+                pygame.draw.rect(self.screen, constants.TILE_COLOURS[11], pygame.Rect(constants.HELP_BTN), 0, 5)
+                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 30)
+                text = font.render("Guide", True, constants.WHITE)
+                textRect = text.get_rect()
+                textRect.center = (0.5*(2*constants.HELP_BTN[0] + constants.HELP_BTN[2]), 0.5*(2*constants.HELP_BTN[1] + constants.HELP_BTN[3]))
+                self.screen.blit(text, textRect)
 
             else:
                 

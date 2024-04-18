@@ -6,144 +6,109 @@ import copy
 import time
 import math
 
+pygame.init()
 # comment at the start of each method a description
 # use name mangling to encapsulate code
 # use inheritance
 # game manager class
 
+  
+#colours
+white = (255, 255, 255)
+background_white = (250, 248, 239)
+green = (0, 255, 0)
+blue = (0, 0, 128)
+grey = (63, 63, 74)
+text_grey = (118, 110, 101)
+background_grey = (187, 172, 159)
+brown = (143, 122, 101)
+
+# tile colours
+tile_colours = {
+    0: (204, 192, 179),
+    1: (238, 227, 218),
+    2: (237, 223, 200),
+    3: (242, 177, 120),
+    4: (245, 149, 98),
+    5: (245, 124, 95),
+    6: (246, 94, 58),
+    7: (237, 207, 115),
+    8: (237, 204, 97),
+    9: (237, 199, 80),
+    10: (237, 196, 63),
+    11: (237, 194, 45)
+}
+
+# TITLE OF CANVAS 
+pygame.display.set_caption("My Board") 
+
+
+
 class gameManager():
     def __init__(self):
-        pygame.init()
-        self.in_menu = True
+        self.in_menu = False
         self.exit = False
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
         self.board = Board(self.screen)
-        
-        pygame.display.set_caption("2048") 
+        self.screen.fill((255, 255, 255))
 
     def run(self):
         while not self.exit:
-            
-            
-            if self.in_menu:
-
-                for event in pygame.event.get():
-                    #event manager
-                    if event.type == pygame.QUIT: 
-                        self.exit = True
-                    elif event.type == pygame.MOUSEBUTTONUP:
-                        self.handle_btns(pygame.mouse.get_pos())
-
-                #draw background
-                self.screen.fill(constants.BACKGROUND_WHITE)
-
-                #draw heading
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 100)
-                text = font.render("2048", True, constants.TEXT_GREY)
-                textRect = text.get_rect()
-                textRect.center = (350, 120)
-                self.screen.blit(text, textRect)
-
-                #draw play button
-                self.draw_button(constants.PLAY_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Play")
-
-                #draw load button
-                self.draw_button(constants.LOAD_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Load Game")
-
-                #draw help button
-                self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Guide")
-
-            else:
-                
-                for event in pygame.event.get():
-                    #event manager
+    
+            if not self.in_menu:
+                for event in pygame.event.get(): 
                     if event.type == pygame.QUIT: 
                         self.exit = True
                     elif event.type == pygame.KEYDOWN and not self.board.in_animation:
                         self.board.handle_keys(event)
                     elif event.type == pygame.MOUSEBUTTONUP:
-                        self.handle_btns(pygame.mouse.get_pos())
+                        self.board.handle_click(pygame.mouse.get_pos())
                 self.board.in_keydown = False
                 
                 #draw background
-                self.screen.fill(constants.BACKGROUND_WHITE)
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((constants.X_OFFSET - constants.GRID_MARGIN, constants.Y_OFFSET - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
-
+                self.screen.fill(background_white)
+                pygame.draw.rect(self.screen, background_grey, pygame.Rect((constants.X_OFFSET - constants.GRID_MARGIN, constants.Y_OFFSET - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
+                
+                # draw UI
+                
                 #draw heading
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.HEADING_SIZE)
-                text = font.render("2048", True, constants.TEXT_GREY)
+                text = font.render("2048", True, text_grey)
                 textRect = text.get_rect()
                 textRect.center = constants.HEADING_POS
                 self.screen.blit(text, textRect)
 
                 #draw score menu
-                pygame.draw.rect(self.screen, constants.BACKGROUND_GREY, pygame.Rect((400, 50, 100, 50)))
+                pygame.draw.rect(self.screen, background_grey, pygame.Rect((400, 50, 100, 50)))
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
-                text = font.render("Score:", True, constants.WHITE)
+                text = font.render("Score:", True, white)
                 textRect = text.get_rect()
                 textRect.center = (450, 60)
                 self.screen.blit(text, textRect)
 
+                text = font.render(str(self.board.score), True, white)
+                textRect = text.get_rect()
+                textRect.center = (450, 80)
+                self.screen.blit(text, textRect)
+                
                 #draw restart button
-                self.draw_button(constants.RESTART_BTN, constants.BROWN, 20, constants.WHITE, "Restart")
+                pygame.draw.rect(self.screen, brown, pygame.Rect(constants.RESTART_BUTTON_POSITION))
+                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
+                text = font.render("Restart", True, white)
+                textRect = text.get_rect()
+                textRect.center = (460, 155)
+                self.screen.blit(text, textRect)
 
-                #draw back button
-                self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
+
 
                 #draw board and tiles
                 self.board.draw(self.screen)
                 self.board.animate_tiles()
                 
 
-            pygame.display.update()
-            self.clock.tick(40)
-
-    def handle_btns(self, pos):
-        # decides which buttons are pressed based on mouse pos
-        
-        if self.in_menu: #menu buttons
-            btn = constants.PLAY_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.new_game()
-            
-            btn = constants.LOAD_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.load_game()
-
-            btn = constants.HELP_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.help_menu()
-
-        else: #game buttons
-
-            #restart button
-            btn = constants.RESTART_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.board.restart()
-
-            #home button
-            btn = constants.HOME_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.in_menu = True
-
-    def new_game(self):
-        self.board.restart()
-        self.in_menu = False
-
-    def load_game(self):
-        print("load")
-
-    def help_menu(self):
-        print("help")
-
-    def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
-        pygame.draw.rect(self.screen, btn_colour, pygame.Rect(btn_position), 0, 5)
-        font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', font_size)
-        text = font.render(text_content, True, font_colour)
-        textRect = text.get_rect()
-        textRect.center = (0.5*(2*btn_position[0] + btn_position[2]), 0.5*(2*btn_position[1] + btn_position[3]))
-        self.screen.blit(text, textRect)
+                pygame.display.update()
+                self.clock.tick(40)
 
 class Board(object):
     def __init__(self, surface):
@@ -154,6 +119,7 @@ class Board(object):
         self.score = 0
         self.in_keydown = False
         self.surface = surface
+        self.draw(surface)
         self.in_animation = False
         self.animations = []
 
@@ -332,18 +298,18 @@ class Board(object):
                 if self.state[y][x] != 0 and self.state[y][x] <= 50:
                     self.draw_tile(constants.TILE_WIDTH * x, constants.TILE_WIDTH * y, str(2 ** self.state[y][x]))
                 else:
-                    pygame.draw.rect(surface, constants.TILE_COLOURS[0], pygame.Rect((constants.TILE_WIDTH * x + constants.X_OFFSET, constants.TILE_WIDTH * y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
+                    pygame.draw.rect(surface, tile_colours[0], pygame.Rect((constants.TILE_WIDTH * x + constants.X_OFFSET, constants.TILE_WIDTH * y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
 
     def draw_tile(self, x, y, tile_value):
         
         tile_num = math.log2(int(tile_value))
         font_colour = None
         if tile_num <= 2:
-            font_colour = constants.TEXT_GREY
+            font_colour = text_grey
         else:
-            font_colour = constants.WHITE
+            font_colour = white
 
-        pygame.draw.rect(self.surface, constants.TILE_COLOURS[tile_num], pygame.Rect((x + constants.X_OFFSET, y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
+        pygame.draw.rect(self.surface, tile_colours[tile_num], pygame.Rect((x + constants.X_OFFSET, y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
         font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.TILE_FONT_SIZE)
         text = font.render(tile_value, True, font_colour)
         textRect = text.get_rect()
@@ -362,10 +328,20 @@ class Board(object):
             self.in_keydown = True
         elif event.key == pygame.K_UP:
             self.move((0, -1))
-            self.in_keydown = True     
+            self.in_keydown = True
+    
+    def handle_click(self, pos):
+        #restart button
+        rbtn = constants.RESTART_BUTTON_POSITION
+        if pos[0] >= rbtn[0] and pos[0] <= rbtn[0] + rbtn[2] and pos[1] >= rbtn[1] and pos[1] <= rbtn[1] + rbtn[3]:
+            self.restart()
 
     def restart(self):
         self.__init__(self.surface)
+
+
+
+
 
 game = gameManager()
 game.run()
