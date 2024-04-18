@@ -143,10 +143,7 @@ class gameManager():
         self.in_menu = False
 
     def load_game(self):
-        self.board.restart()
-        self.in_menu = False
-        self.board.load_file(self.csv_file)
-
+        print("load")
 
     def help_menu(self):
         print("help")
@@ -377,16 +374,6 @@ class Board(object):
         elif event.key == pygame.K_UP:
             self.move((0, -1))
             self.in_keydown = True     
-
-    def load_file(self, csv_file):
-        # loads saved game board from csv file
-        rows = []
-        with open(csv_file, 'r') as file:
-            csvreader = csv.reader(file)
-            for row in csvreader:
-                rows.append(list(map(lambda n: int(n), row)))
-
-        self.state = rows
 
     def save(self, csv_file):
         # writing game_board to csv file   

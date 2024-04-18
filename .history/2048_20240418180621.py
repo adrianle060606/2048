@@ -129,7 +129,7 @@ class gameManager():
             #save button
             btn = constants.SAVE_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.board.save(self.csv_file)
+                self.board.load_file(self.csv_file)
 
             #restart button
             btn = constants.RESTART_BTN
@@ -143,10 +143,7 @@ class gameManager():
         self.in_menu = False
 
     def load_game(self):
-        self.board.restart()
-        self.in_menu = False
-        self.board.load_file(self.csv_file)
-
+        print("load")
 
     def help_menu(self):
         print("help")
@@ -384,9 +381,8 @@ class Board(object):
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
             for row in csvreader:
-                rows.append(list(map(lambda n: int(n), row)))
-
-        self.state = rows
+                rows.append(row)
+        print(rows)
 
     def save(self, csv_file):
         # writing game_board to csv file   

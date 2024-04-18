@@ -113,7 +113,7 @@ class gameManager():
             
             btn = constants.LOAD_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.load_game()
+                self.board.load_file(self.csv_file)
 
             btn = constants.HELP_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
@@ -143,10 +143,7 @@ class gameManager():
         self.in_menu = False
 
     def load_game(self):
-        self.board.restart()
-        self.in_menu = False
-        self.board.load_file(self.csv_file)
-
+        print("load")
 
     def help_menu(self):
         print("help")
