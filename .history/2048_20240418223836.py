@@ -150,12 +150,11 @@ class gameManager():
                 self.board.animate_tiles()
 
                 #if gameover render gameover text
-                if self.board.game_over:
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
-                    text = font.render("Game Over", True, constants.TEXT_GREY)
-                    textRect = text.get_rect()
-                    textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2 + 50)
-                    self.screen.blit(text, textRect)
+                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 50)
+                text = font.render("Game Over", True, constants.WHITE)
+                textRect = text.get_rect()
+                textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2)
+                self.screen.blit(text, textRect)
 
                 
                 
@@ -317,8 +316,6 @@ class Board(object):
                         elif has_moved:
                             
                             animations.append((prev_x_target, prev_y_target))
-                            self.in_animation = True
-
                             
                             init_pos = (init_pos[0] * constants.TILE_WIDTH, init_pos[1] * constants.TILE_WIDTH)
                             final_pos = (abs(prev_x_target) * constants.TILE_WIDTH, abs(prev_y_target) * constants.TILE_WIDTH)
@@ -439,16 +436,16 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.move((-1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
+        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.move((1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.move((0, 1))
             self.in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
+        elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.move((0, -1))
             self.in_keydown = True     
 

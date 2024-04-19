@@ -83,7 +83,7 @@ class gameManager():
                     #event manager
                     if event.type == pygame.QUIT: 
                         self.exit = True
-                    elif event.type == pygame.KEYDOWN and not self.board.in_animation:
+                    elif event.type == pygame.KEYUP and not self.board.in_animation:
                         self.board.handle_keys(event)
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.handle_btns(pygame.mouse.get_pos())
@@ -317,8 +317,6 @@ class Board(object):
                         elif has_moved:
                             
                             animations.append((prev_x_target, prev_y_target))
-                            self.in_animation = True
-
                             
                             init_pos = (init_pos[0] * constants.TILE_WIDTH, init_pos[1] * constants.TILE_WIDTH)
                             final_pos = (abs(prev_x_target) * constants.TILE_WIDTH, abs(prev_y_target) * constants.TILE_WIDTH)
@@ -439,16 +437,16 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.move((-1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
+        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.move((1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.move((0, 1))
             self.in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
+        elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.move((0, -1))
             self.in_keydown = True     
 

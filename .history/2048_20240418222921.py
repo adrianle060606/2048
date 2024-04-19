@@ -149,14 +149,6 @@ class gameManager():
                 self.board.draw(self.screen)
                 self.board.animate_tiles()
 
-                #if gameover render gameover text
-                if self.board.game_over:
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
-                    text = font.render("Game Over", True, constants.TEXT_GREY)
-                    textRect = text.get_rect()
-                    textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2 + 50)
-                    self.screen.blit(text, textRect)
-
                 
                 
 
@@ -239,7 +231,6 @@ class Board(object):
         self.save_status = "Save"
         self.save_colour = constants.WHITE
         self.save_delay = 0
-        self.game_over = False
 
     def move(self, direction):
 
@@ -317,8 +308,6 @@ class Board(object):
                         elif has_moved:
                             
                             animations.append((prev_x_target, prev_y_target))
-                            self.in_animation = True
-
                             
                             init_pos = (init_pos[0] * constants.TILE_WIDTH, init_pos[1] * constants.TILE_WIDTH)
                             final_pos = (abs(prev_x_target) * constants.TILE_WIDTH, abs(prev_y_target) * constants.TILE_WIDTH)
@@ -439,16 +428,16 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.move((-1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
+        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.move((1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.move((0, 1))
             self.in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
+        elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.move((0, -1))
             self.in_keydown = True     
 
@@ -495,6 +484,7 @@ class Board(object):
                     vacant_tile_exists = True
                 x += 1
             y += 1
+        print("vacant_tile", vacant_tile_exists)
 
         if vacant_tile_exists == False:
             # secondly check if there are no two matching adjacent tiles
@@ -512,20 +502,27 @@ class Board(object):
                     x += 1
                 y += 1
                 
+            if game_over:
+                print("horizontal check failed")
+            
+            y_check = True
             x = 0
-            while x < len(self.state[0]) and game_over:
+            while x < len(self.state[0]) :
                 prev_tile = self.state[0][x]
                 y = 1
-                while y < len(self.state) and game_over:
+                while y < len(self.state) :
                     if self.state[y][x] == prev_tile:
                         game_over = False
+                        y_check = False
                     prev_tile = self.state[y][x]
                     y += 1
                 x += 1
+            
+            if y_check:
+                print("vertical test failed")
         
             if game_over:
                 print("game_over")
-                self.game_over = True
 
     def read_highscore(self):
         with open(constants.HIGHSCORE_FILE, "r") as file:

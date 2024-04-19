@@ -439,16 +439,16 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.move((-1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
+        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.move((1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.move((0, 1))
             self.in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
+        elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.move((0, -1))
             self.in_keydown = True     
 

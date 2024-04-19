@@ -52,7 +52,6 @@ HEADING_POS = (200, 60)
 PLAY_BTN = (260, 320, 180, 65)
 LOAD_BTN = (260, 400, 180, 65)
 HELP_BTN = (260, 480, 180, 65)
-BACK_BTN = (260, 580, 180, 65)
 HOME_BTN = (100, 135, 120, 40)
 SAVE_BTN = (275, 135, 120, 40)
 RESTART_BTN = (450, 135, 120, 40)
@@ -62,8 +61,7 @@ HIGHSCORE_FILE = "highscore.txt"
 INSTRUCTIONS = [
     "Use arrow keys or WASD to move tiles in any direction.",
     "When two tiles with the same number touch, they merge into one.",
-    "Be victorious and get to the 2048 tile!",
-    "I wish you luck!",
+    "Be victorious and get to the 2048 tile!"
 ]
 
 

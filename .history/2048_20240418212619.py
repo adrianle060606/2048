@@ -16,13 +16,11 @@ class gameManager():
     def __init__(self):
         pygame.init()
         self.in_menu = True
-        self.in_guide = False
         self.exit = False
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
         self.board = Board(self.screen)
         self.csv_file = "board.csv"
-
         
         pygame.display.set_caption("2048") 
 
@@ -49,33 +47,14 @@ class gameManager():
                 textRect.center = (350, 120)
                 self.screen.blit(text, textRect)
 
-                if not self.in_guide:
-                    #draw play button
-                    self.draw_button(constants.PLAY_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Play")
+                #draw play button
+                self.draw_button(constants.PLAY_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Play")
 
-                    #draw load button
-                    self.draw_button(constants.LOAD_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Load Game")
+                #draw load button
+                self.draw_button(constants.LOAD_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Load Game")
 
-                    #draw help button
-                    self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Guide")
-
-                else:
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 40)
-                    text = font.render("How To Play", True, constants.TEXT_GREY)
-                    textRect = text.get_rect()
-                    textRect.center = (350, 300)
-                    self.screen.blit(text, textRect)
-
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
-                    for i, instruction in enumerate(constants.INSTRUCTIONS):
-                        text = font.render(instruction, True, constants.TEXT_GREY)
-                        textRect = text.get_rect()
-                        textRect.center = (350, 370 + 50*i)
-                        self.screen.blit(text, textRect)
-
-                    #back button
-                    self.draw_button(constants.BACK_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Back")
-
+                #draw help button
+                self.draw_button(constants.HELP_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Guide")
 
             else:
                 
@@ -149,14 +128,6 @@ class gameManager():
                 self.board.draw(self.screen)
                 self.board.animate_tiles()
 
-                #if gameover render gameover text
-                if self.board.game_over:
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
-                    text = font.render("Game Over", True, constants.TEXT_GREY)
-                    textRect = text.get_rect()
-                    textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2 + 50)
-                    self.screen.blit(text, textRect)
-
                 
                 
 
@@ -178,10 +149,6 @@ class gameManager():
             btn = constants.HELP_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.help_menu()
-
-            btn = constants.BACK_BTN
-            if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.in_guide = False
 
         else: #game buttons
 
@@ -213,7 +180,7 @@ class gameManager():
 
 
     def help_menu(self):
-        self.in_guide = True
+        print("help")
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         pygame.draw.rect(self.screen, btn_colour, pygame.Rect(btn_position), 0, 5)
@@ -239,7 +206,6 @@ class Board(object):
         self.save_status = "Save"
         self.save_colour = constants.WHITE
         self.save_delay = 0
-        self.game_over = False
 
     def move(self, direction):
 
@@ -317,8 +283,6 @@ class Board(object):
                         elif has_moved:
                             
                             animations.append((prev_x_target, prev_y_target))
-                            self.in_animation = True
-
                             
                             init_pos = (init_pos[0] * constants.TILE_WIDTH, init_pos[1] * constants.TILE_WIDTH)
                             final_pos = (abs(prev_x_target) * constants.TILE_WIDTH, abs(prev_y_target) * constants.TILE_WIDTH)
@@ -403,7 +367,6 @@ class Board(object):
 
             # get random chance: 90% of a 2, 10% of a 4
             self.state[empty_indexes[selected_index][1]][empty_indexes[selected_index][0]] = self.tile_value() 
-        self.check_game_over()
 
     def tile_value(self):
         roll = random.randint(0,10)
@@ -439,16 +402,16 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
+        if event.key == pygame.K_LEFT or event.key == pygame.K_a:
             self.move((-1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
+        elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
             self.move((1, 0))
             self.in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
+        elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
             self.move((0, 1))
             self.in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
+        elif event.key == pygame.K_UP or event.key == pygame.K_w:
             self.move((0, -1))
             self.in_keydown = True     
 
@@ -481,51 +444,6 @@ class Board(object):
 
     def restart(self):
         self.__init__(self.surface)
-
-    def check_game_over(self):
-        #checks if user can't move anymore
-
-        #first check if there is any spare tile space
-        y = 0
-        vacant_tile_exists = False
-        while y < len(self.state) and not vacant_tile_exists:
-            x = 0
-            while x < len(self.state[y]) and not vacant_tile_exists:
-                if self.state[y][x] == 0:
-                    vacant_tile_exists = True
-                x += 1
-            y += 1
-
-        if vacant_tile_exists == False:
-            # secondly check if there are no two matching adjacent tiles
-            # to do this we first check horizontally then vertically
-            game_over = True
-
-            y = 0
-            while y < len(self.state) and game_over:
-                prev_tile = self.state[y][0]
-                x = 1
-                while x < len(self.state[y]) and game_over:
-                    if self.state[y][x] == prev_tile:
-                        game_over = False
-                    prev_tile = self.state[y][x]
-                    x += 1
-                y += 1
-                
-            x = 0
-            while x < len(self.state[0]) and game_over:
-                prev_tile = self.state[0][x]
-                y = 1
-                while y < len(self.state) and game_over:
-                    if self.state[y][x] == prev_tile:
-                        game_over = False
-                    prev_tile = self.state[y][x]
-                    y += 1
-                x += 1
-        
-            if game_over:
-                print("game_over")
-                self.game_over = True
 
     def read_highscore(self):
         with open(constants.HIGHSCORE_FILE, "r") as file:
