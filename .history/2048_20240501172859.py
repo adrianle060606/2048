@@ -7,33 +7,34 @@ import time
 import math
 import csv
 
+# comment at the start of each method a description
 # use name mangling to encapsulate code
-# disable saving game when game over
+# use inheritance
+# game manager class
+#disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
 # add warning that saving a game will override an old game
-# add to the guide, make it interactable and include UI techniques such as searchable help
 
 class gameManager():
     def __init__(self):
-        #Initialize the game manager.
         pygame.init()
-        self.__in_menu = True
+        self.in_menu = True
         self.in_guide = False
         self.exit = False
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
         self.board = Board(self.screen)
         self.csv_file = "board.csv"
+
         
         pygame.display.set_caption("2048") 
 
     def run(self):
-        #Main game loop which handles different states - main menu, guide, or main game
         while not self.exit:
             
             
-            if self.__in_menu:
+            if self.in_menu:
 
                 for event in pygame.event.get():
                     #event manager
@@ -169,7 +170,7 @@ class gameManager():
     def handle_btns(self, pos):
         # decides which buttons are pressed based on mouse pos
         
-        if self.__in_menu: #menu buttons
+        if self.in_menu: #menu buttons
             btn = constants.PLAY_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.new_game()
@@ -191,7 +192,7 @@ class gameManager():
             #home button
             btn = constants.HOME_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.__in_menu = True
+                self.in_menu = True
 
             #save button
             btn = constants.SAVE_BTN
@@ -206,23 +207,19 @@ class gameManager():
 
 
     def new_game(self):
-        # starts new game
         self.board.restart()
-        self.__in_menu = False
+        self.in_menu = False
 
     def load_game(self):
-        # loads saved game
         self.board.restart()
-        self.__in_menu = False
+        self.in_menu = False
         self.board.load_file(self.csv_file)
 
 
     def help_menu(self):
-        #Opens the guide
         self.in_guide = True
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
-        # generic subroutine for drawing a button
         pygame.draw.rect(self.screen, btn_colour, pygame.Rect(btn_position), 0, 5)
         font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', font_size)
         text = font.render(text_content, True, font_colour)
@@ -232,8 +229,7 @@ class gameManager():
 
 class Board(object):
     def __init__(self, surface):
-        # Initialize the game board.
-        #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
+        # 0 --> empty, 1 --> 2, 2 --> 4, 3 --> 8 etc.
         self.state = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
         self.new_piece()
         self.new_piece()
@@ -250,7 +246,8 @@ class Board(object):
         self.game_over = False
 
     def move(self, direction):
-        # moves tiles in specified direction while checking for collsion
+
+        valid_move = False
         x_range = None
         y_range = None
 
@@ -354,7 +351,7 @@ class Board(object):
                 self.state[y][x] = abs(self.temp_state[y][x])
         
     def add_animation(self, init_pos, final_pos, init_tile_value, final_tile_value, direction):
-        #adds tile to queue of animations with a specific start and end position and tile value
+
         
         # check which direction
         block_movement = 0
@@ -369,7 +366,6 @@ class Board(object):
         self.animations.append({"current_pos": init_pos, "final_pos": final_pos, "init_tile_value": init_tile_value, "final_tile_value": final_tile_value, "direction": direction, "animation_speed": animation_speed})
 
     def animate_tiles(self):
-        # animates moving tiles
         
         animation_removal = []
 
@@ -392,13 +388,14 @@ class Board(object):
             self.draw_tile(animation["current_pos"][0], animation["current_pos"][1], str(2**animation["init_tile_value"]))
             self.state[animation["final_pos"][1] // constants.TILE_WIDTH][animation["final_pos"][0] // constants.TILE_WIDTH] = animation["final_tile_value"]
 
+
+
         if len(self.animations) == 0:
             if self.in_animation:
                 self.in_animation = False
                 self.new_piece()
 
     def new_piece(self):
-        # generates a new random piece in random position
         empty_indexes = []
         for y in range(len(self.state)):
             for x in range(len(self.state[y])):
@@ -413,7 +410,6 @@ class Board(object):
         self.check_game_over()
 
     def tile_value(self):
-        # gets random tile value
         roll = random.randint(0,10)
         if roll != 1:
             return 1
@@ -421,7 +417,8 @@ class Board(object):
             return 2
 
     def draw(self, surface):
-        #draws the game board
+        
+        
         for y in range(len(self.state)):
             for x in range(len(self.state[y])):
                 if self.state[y][x] != 0 and self.state[y][x] <= 50:
@@ -430,7 +427,7 @@ class Board(object):
                     pygame.draw.rect(surface, constants.TILE_COLOURS[0], pygame.Rect((constants.TILE_WIDTH * x + constants.X_OFFSET, constants.TILE_WIDTH * y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
 
     def draw_tile(self, x, y, tile_value):
-        # draws a tile
+        
         tile_num = math.log2(int(tile_value))
         font_colour = None
         if tile_num <= 2:
@@ -446,7 +443,6 @@ class Board(object):
         self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
-        # move tiles in direction of the key pressed
         if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
             self.move((-1, 0))
             self.in_keydown = True
@@ -488,11 +484,10 @@ class Board(object):
             self.save_delay = constants.SAVE_ANIMATION_DELAY
 
     def restart(self):
-        # restarts game
         self.__init__(self.surface)
 
     def check_game_over(self):
-        #checks if user can't move anymore and game is over
+        #checks if user can't move anymore
 
         #first check if there is any spare tile space
         y = 0
@@ -537,7 +532,6 @@ class Board(object):
                 self.game_over = True
 
     def read_highscore(self):
-        # reads data from highscore file
         with open(constants.HIGHSCORE_FILE, "r") as file:
             return int(file.read())
     

@@ -7,8 +7,11 @@ import time
 import math
 import csv
 
+# comment at the start of each method a description
 # use name mangling to encapsulate code
-# disable saving game when game over
+# use inheritance
+# game manager class
+#disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
 # add warning that saving a game will override an old game
@@ -18,7 +21,7 @@ class gameManager():
     def __init__(self):
         #Initialize the game manager.
         pygame.init()
-        self.__in_menu = True
+        self.in_menu = True
         self.in_guide = False
         self.exit = False
         self.clock = pygame.time.Clock()
@@ -33,7 +36,7 @@ class gameManager():
         while not self.exit:
             
             
-            if self.__in_menu:
+            if self.in_menu:
 
                 for event in pygame.event.get():
                     #event manager
@@ -169,7 +172,7 @@ class gameManager():
     def handle_btns(self, pos):
         # decides which buttons are pressed based on mouse pos
         
-        if self.__in_menu: #menu buttons
+        if self.in_menu: #menu buttons
             btn = constants.PLAY_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.new_game()
@@ -191,7 +194,7 @@ class gameManager():
             #home button
             btn = constants.HOME_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.__in_menu = True
+                self.in_menu = True
 
             #save button
             btn = constants.SAVE_BTN
@@ -208,12 +211,12 @@ class gameManager():
     def new_game(self):
         # starts new game
         self.board.restart()
-        self.__in_menu = False
+        self.in_menu = False
 
     def load_game(self):
         # loads saved game
         self.board.restart()
-        self.__in_menu = False
+        self.in_menu = False
         self.board.load_file(self.csv_file)
 
 
