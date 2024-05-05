@@ -86,19 +86,19 @@ class gameManager():
                     #event manager
                     if event.type == pygame.QUIT: 
                         self.__exit = True
-                    elif event.type == pygame.KEYDOWN and not self.__board.get_in_animation():
+                    elif event.type == pygame.KEYDOWN and not self.__board.in_animation:
                         self.__board.handle_keys(event)
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.handle_btns(pygame.mouse.get_pos())
-                self.__board.set_in_keydown(False)
+                self.__board.in_keydown = False
                 
-                if self.__board.get_saving():
+                if self.__board.saving:
                     self.__board.save(self.__csv_file)
-                if self.__board.get_save_delay() <= 0:
-                    self.__board.set_save_colour(constants.WHITE)
-                    self.__board.set_save_status("Save")
+                if self.__board.save_delay <= 0:
+                    self.__board.save_colour = constants.WHITE
+                    self.__board.save_status = "Save"
                 else:
-                    self.__board.set_save_delay(self.__board.get_save_delay() - 1/constants.CLOCK_SPEED)
+                    self.__board.save_delay -= 1/constants.CLOCK_SPEED
 
                 #draw background
                 self.__screen.fill(constants.BACKGROUND_WHITE)
@@ -120,7 +120,7 @@ class gameManager():
                 self.__screen.blit(text, textRect)
 
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
+                text = font.render(f"{self.__board.score}", True, constants.WHITE)
                 textRect = text.get_rect()
                 textRect.center = (400, 75)
                 self.__screen.blit(text, textRect)
@@ -134,7 +134,7 @@ class gameManager():
                 self.__screen.blit(text, textRect)
 
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.__board.get_highscore()}", True, constants.WHITE)
+                text = font.render(f"{self.__board.highscore}", True, constants.WHITE)
                 textRect = text.get_rect()
                 textRect.center = (530, 75)
                 self.__screen.blit(text, textRect)
@@ -143,7 +143,7 @@ class gameManager():
                 self.draw_button(constants.RESTART_BTN, constants.BROWN, 20, constants.WHITE, "Restart")
 
                 #draw save button
-                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.get_save_colour(), self.__board.get_save_status())
+                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.save_colour, self.__board.save_status)
 
                 #draw back button
                 self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
@@ -153,7 +153,7 @@ class gameManager():
                 self.__board.animate_tiles()
 
                 #if gameover render gameover text
-                if self.__board.get_game_over():
+                if self.__board.game_over:
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
                     text = font.render("Game Over", True, constants.TEXT_GREY)
                     textRect = text.get_rect()
@@ -234,117 +234,20 @@ class Board(object):
     def __init__(self, surface):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
-        self.__state = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-        self.__in_keydown = False
-        self.__surface = surface
-        self.__in_animation = False
-        self.__animations = []
-        self.__saving = False
-        self.__save_status = "Save"
-        self.__save_delay = 0
-        self.__game_over = False
-        self.__score = 0
-        self.__save_colour = constants.WHITE
-        self.__highscore = self.read_highscore()
+        self.state = [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
         self.new_piece()
         self.new_piece()
-
-    # Getters and setters for each attribute
-    def get_state(self):
-        # Get the current state of the game board.
-        return self.__state
-
-    def set_state(self, state):
-        # Set the state of the game board.
-        self.__state = state
-
-    def get_in_keydown(self):
-        # Get the state of keydown.
-        return self.__in_keydown
-
-    def set_in_keydown(self, in_keydown):
-        # Set the state of keydown.
-        self.__in_keydown = in_keydown
-
-    def get_surface(self):
-        # Get the surface object.
-        return self.__surface
-
-    def set_surface(self, surface):
-        # Set the surface object.
-        self.__surface = surface
-
-    def get_in_animation(self):
-        # Get the animation state.
-        return self.__in_animation
-
-    def set_in_animation(self, in_animation):
-        # Set the animation state.
-        self.__in_animation = in_animation
-
-    def get_animations(self):
-        # Get the list of animations.
-        return self.__animations
-
-    def set_animations(self, animations):
-        # Set the list of animations.
-        self.__animations = animations
-
-    def get_saving(self):
-        # Get the saving state.
-        return self.__saving
-
-    def set_saving(self, saving):
-        # Set the saving state.
-        self.__saving = saving
-
-    def get_save_status(self):
-        # Get the save status.
-        return self.__save_status
-
-    def set_save_status(self, save_status):
-        # Set the save status.
-        self.__save_status = save_status
-
-    def get_save_delay(self):
-        # Get the save delay.
-        return self.__save_delay
-
-    def set_save_delay(self, save_delay):
-        # Set the save delay.
-        self.__save_delay = save_delay
-
-    def get_game_over(self):
-        # Get the game over state.
-        return self.__game_over
-
-    def set_game_over(self, game_over):
-        # Set the game over state.
-        self.__game_over = game_over
-
-    def get_score(self):
-        # Get the current score.
-        return self.__score
-
-    def set_score(self, score):
-        # Set the current score.
-        self.__score = score
-
-    def get_save_colour(self):
-        # Get the save colour.
-        return self.__save_colour
-
-    def set_save_colour(self, save_colour):
-        # Set the save colour.
-        self.__save_colour = save_colour
-
-    def get_highscore(self):
-        # Get the highscore.
-        return self.__highscore
-
-    def set_highscore(self, highscore):
-        # Set the highscore.
-        self.__highscore = highscore
+        self.score = 0
+        self.highscore = self.read_highscore()
+        self.in_keydown = False
+        self.surface = surface
+        self.in_animation = False
+        self.animations = []
+        self.saving = False
+        self.save_status = "Save"
+        self.save_colour = constants.WHITE
+        self.save_delay = 0
+        self.game_over = False
 
     def move(self, direction):
         # moves tiles in specified direction while checking for collsion
@@ -365,7 +268,7 @@ class Board(object):
         else: 
             y_range = list(range(constants.TILES_ACROSS))
 
-        self.temp_state = copy.deepcopy(self.__state)
+        self.temp_state = copy.deepcopy(self.state)
         for y in y_range:
             for x in x_range:
                 tile_value = copy.deepcopy(self.temp_state[y][x])
@@ -405,7 +308,7 @@ class Board(object):
                                 tile_value += 1
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
-                                self.__score += 2**abs(tile_value)
+                                self.score += 2**abs(tile_value)
                                 self.update_highscore()
 
                             # if passes collision detection then move
@@ -421,7 +324,7 @@ class Board(object):
                         elif has_moved:
                             
                             animations.append((prev_x_target, prev_y_target))
-                            self.__in_animation = True
+                            self.in_animation = True
 
                             
                             init_pos = (init_pos[0] * constants.TILE_WIDTH, init_pos[1] * constants.TILE_WIDTH)
@@ -432,7 +335,7 @@ class Board(object):
                             if init_tile_value == abs(tile_value):
                                 target_animated = True
                             else:
-                                for animation in self.__animations:
+                                for animation in self.animations:
                                     if animation["final_pos"] == final_pos:
                                         target_animated = True
                             
@@ -446,9 +349,9 @@ class Board(object):
             self.temp_state[animation[1]][animation[0]] += 100
 
         #copy the state into the temp state
-        for y in range(len(self.__state)):
-            for x in range(len(self.__state[y])):
-                self.__state[y][x] = abs(self.temp_state[y][x])
+        for y in range(len(self.state)):
+            for x in range(len(self.state[y])):
+                self.state[y][x] = abs(self.temp_state[y][x])
         
     def add_animation(self, init_pos, final_pos, init_tile_value, final_tile_value, direction):
         #adds tile to queue of animations with a specific start and end position and tile value
@@ -463,7 +366,7 @@ class Board(object):
             block_movement = abs(final_pos[1]/constants.TILE_WIDTH - init_pos[1]/constants.TILE_WIDTH)
 
         animation_speed = block_movement/4
-        self.__animations.append({"current_pos": init_pos, "final_pos": final_pos, "init_tile_value": init_tile_value, "final_tile_value": final_tile_value, "direction": direction, "animation_speed": animation_speed})
+        self.animations.append({"current_pos": init_pos, "final_pos": final_pos, "init_tile_value": init_tile_value, "final_tile_value": final_tile_value, "direction": direction, "animation_speed": animation_speed})
 
     def animate_tiles(self):
         # animates moving tiles
@@ -471,8 +374,8 @@ class Board(object):
         animation_removal = []
 
         
-        for animation in self.__animations:
-            self.__in_animation = True
+        for animation in self.animations:
+            self.in_animation = True
             animation_speed = constants.ANIMATION_SPEED * animation["animation_speed"]
             if animation["current_pos"][0] == animation["final_pos"][0] and animation["current_pos"][1] == animation["final_pos"][1]:
                 animation_removal.append(animation)
@@ -485,28 +388,28 @@ class Board(object):
                 self.draw_tile(animation["current_pos"][0], animation["current_pos"][1], str(2**animation["init_tile_value"]))
 
         for animation in animation_removal:
-            self.__animations.remove(animation)
+            self.animations.remove(animation)
             self.draw_tile(animation["current_pos"][0], animation["current_pos"][1], str(2**animation["init_tile_value"]))
-            self.__state[animation["final_pos"][1] // constants.TILE_WIDTH][animation["final_pos"][0] // constants.TILE_WIDTH] = animation["final_tile_value"]
+            self.state[animation["final_pos"][1] // constants.TILE_WIDTH][animation["final_pos"][0] // constants.TILE_WIDTH] = animation["final_tile_value"]
 
-        if len(self.__animations) == 0:
-            if self.__in_animation:
-                self.__in_animation = False
+        if len(self.animations) == 0:
+            if self.in_animation:
+                self.in_animation = False
                 self.new_piece()
 
     def new_piece(self):
         # generates a new random piece in random position
         empty_indexes = []
-        for y in range(len(self.__state)):
-            for x in range(len(self.__state[y])):
-                if self.__state[y][x] == 0:
+        for y in range(len(self.state)):
+            for x in range(len(self.state[y])):
+                if self.state[y][x] == 0:
                     empty_indexes.append((x, y))
 
         if len(empty_indexes) > 0:
             selected_index = random.randint(0, len(empty_indexes)-1)
 
             # get random chance: 90% of a 2, 10% of a 4
-            self.__state[empty_indexes[selected_index][1]][empty_indexes[selected_index][0]] = self.tile_value() 
+            self.state[empty_indexes[selected_index][1]][empty_indexes[selected_index][0]] = self.tile_value() 
         self.check_game_over()
 
     def tile_value(self):
@@ -519,10 +422,10 @@ class Board(object):
 
     def draw(self, surface):
         #draws the game board
-        for y in range(len(self.__state)):
-            for x in range(len(self.__state[y])):
-                if self.__state[y][x] != 0 and self.__state[y][x] <= 50:
-                    self.draw_tile(constants.TILE_WIDTH * x, constants.TILE_WIDTH * y, str(2 ** self.__state[y][x]))
+        for y in range(len(self.state)):
+            for x in range(len(self.state[y])):
+                if self.state[y][x] != 0 and self.state[y][x] <= 50:
+                    self.draw_tile(constants.TILE_WIDTH * x, constants.TILE_WIDTH * y, str(2 ** self.state[y][x]))
                 else:
                     pygame.draw.rect(surface, constants.TILE_COLOURS[0], pygame.Rect((constants.TILE_WIDTH * x + constants.X_OFFSET, constants.TILE_WIDTH * y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
 
@@ -535,58 +438,58 @@ class Board(object):
         else:
             font_colour = constants.WHITE
 
-        pygame.draw.rect(self.__surface, constants.TILE_COLOURS[tile_num], pygame.Rect((x + constants.X_OFFSET, y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
+        pygame.draw.rect(self.surface, constants.TILE_COLOURS[tile_num], pygame.Rect((x + constants.X_OFFSET, y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
         font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.TILE_FONT_SIZE)
         text = font.render(tile_value, True, font_colour)
         textRect = text.get_rect()
         textRect.center = (x + constants.TILE_WIDTH // 2 + constants.X_OFFSET, y + constants.TILE_WIDTH // 2 + constants.Y_OFFSET)
-        self.__surface.blit(text, textRect)
+        self.surface.blit(text, textRect)
     
     def handle_keys(self, event):
         # move tiles in direction of the key pressed
-        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.__in_animation:
+        if (event.key == pygame.K_LEFT or event.key == pygame.K_a) and not self.in_animation:
             self.move((-1, 0))
-            self.__in_keydown = True
-        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.__in_animation:
+            self.in_keydown = True
+        elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and not self.in_animation:
             self.move((1, 0))
-            self.__in_keydown = True
-        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.__in_animation:
+            self.in_keydown = True
+        elif (event.key == pygame.K_DOWN or event.key == pygame.K_s) and not self.in_animation:
             self.move((0, 1))
-            self.__in_keydown = True
-        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.__in_animation:
+            self.in_keydown = True
+        elif (event.key == pygame.K_UP or event.key == pygame.K_w) and not self.in_animation:
             self.move((0, -1))
-            self.__in_keydown = True     
+            self.in_keydown = True     
 
     def load_file(self, csv_file):
         # loads saved game board from csv file
         rows = []
         with open(csv_file, 'r') as file:
             csvreader = csv.reader(file)
-            self.__score = int(next(file))
+            self.score = int(next(file))
             for row in csvreader:
                 rows.append(list(map(lambda n: int(n), row)))
 
-        self.__state = rows
+        self.state = rows
 
     def save(self, csv_file):
         # writing game_board to csv file 
-        if self.__in_animation:
-            self.__saving = True
+        if self.in_animation:
+            self.saving = True
         else:            
             with open(csv_file, 'w') as csvfile:   
                 # creating a csv writer object   
                 csvwriter = csv.writer(csvfile)   
-                csvwriter.writerow(list([self.__score]))
+                csvwriter.writerow(list([self.score]))
                 # writing the data rows   
-                csvwriter.writerows(self.__state) 
-            self.__saving = False
-            self.__save_status = "Saved!"
-            self.__save_colour = constants.GREEN
-            self.__save_delay = constants.SAVE_ANIMATION_DELAY
+                csvwriter.writerows(self.state) 
+            self.saving = False
+            self.save_status = "Saved!"
+            self.save_colour = constants.GREEN
+            self.save_delay = constants.SAVE_ANIMATION_DELAY
 
     def restart(self):
         # restarts game
-        self.__init__(self.__surface)
+        self.__init__(self.surface)
 
     def check_game_over(self):
         #checks if user can't move anymore and game is over
@@ -594,10 +497,10 @@ class Board(object):
         #first check if there is any spare tile space
         y = 0
         vacant_tile_exists = False
-        while y < len(self.__state) and not vacant_tile_exists:
+        while y < len(self.state) and not vacant_tile_exists:
             x = 0
-            while x < len(self.__state[y]) and not vacant_tile_exists:
-                if self.__state[y][x] == 0:
+            while x < len(self.state[y]) and not vacant_tile_exists:
+                if self.state[y][x] == 0:
                     vacant_tile_exists = True
                 x += 1
             y += 1
@@ -608,30 +511,30 @@ class Board(object):
             game_over = True
 
             y = 0
-            while y < len(self.__state) and game_over:
-                prev_tile = self.__state[y][0]
+            while y < len(self.state) and game_over:
+                prev_tile = self.state[y][0]
                 x = 1
-                while x < len(self.__state[y]) and game_over:
-                    if self.__state[y][x] == prev_tile:
+                while x < len(self.state[y]) and game_over:
+                    if self.state[y][x] == prev_tile:
                         game_over = False
-                    prev_tile = self.__state[y][x]
+                    prev_tile = self.state[y][x]
                     x += 1
                 y += 1
                 
             x = 0
-            while x < len(self.__state[0]) and game_over:
-                prev_tile = self.__state[0][x]
+            while x < len(self.state[0]) and game_over:
+                prev_tile = self.state[0][x]
                 y = 1
-                while y < len(self.__state) and game_over:
-                    if self.__state[y][x] == prev_tile:
+                while y < len(self.state) and game_over:
+                    if self.state[y][x] == prev_tile:
                         game_over = False
-                    prev_tile = self.__state[y][x]
+                    prev_tile = self.state[y][x]
                     y += 1
                 x += 1
         
             if game_over:
                 print("game_over")
-                self.__game_over = True
+                self.game_over = True
 
     def read_highscore(self):
         # reads data from highscore file
@@ -640,10 +543,10 @@ class Board(object):
     
     def update_highscore(self):
         # checks if new highscore and writes it to file
-        if self.__score > self.__highscore:
-            self.__highscore = self.__score
+        if self.score > self.highscore:
+            self.highscore = self.score
             with open(constants.HIGHSCORE_FILE, "w") as file:
-                file.write(f"{self.__highscore}")
+                file.write(f"{self.highscore}")
 
 game = gameManager()
 game.run()

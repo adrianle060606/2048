@@ -86,19 +86,19 @@ class gameManager():
                     #event manager
                     if event.type == pygame.QUIT: 
                         self.__exit = True
-                    elif event.type == pygame.KEYDOWN and not self.__board.get_in_animation():
+                    elif event.type == pygame.KEYDOWN and not self.__board.in_animation:
                         self.__board.handle_keys(event)
                     elif event.type == pygame.MOUSEBUTTONUP:
                         self.handle_btns(pygame.mouse.get_pos())
-                self.__board.set_in_keydown(False)
+                self.__board.in_keydown = False
                 
-                if self.__board.get_saving():
+                if self.__board.saving:
                     self.__board.save(self.__csv_file)
-                if self.__board.get_save_delay() <= 0:
-                    self.__board.set_save_colour(constants.WHITE)
-                    self.__board.set_save_status("Save")
+                if self.__board.save_delay <= 0:
+                    self.__board.save_colour = constants.WHITE
+                    self.__board.save_status = "Save"
                 else:
-                    self.__board.set_save_delay(self.__board.get_save_delay() - 1/constants.CLOCK_SPEED)
+                    self.__board.save_delay -= 1/constants.CLOCK_SPEED
 
                 #draw background
                 self.__screen.fill(constants.BACKGROUND_WHITE)
@@ -120,7 +120,7 @@ class gameManager():
                 self.__screen.blit(text, textRect)
 
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
+                text = font.render(f"{self.__board.score}", True, constants.WHITE)
                 textRect = text.get_rect()
                 textRect.center = (400, 75)
                 self.__screen.blit(text, textRect)
@@ -134,7 +134,7 @@ class gameManager():
                 self.__screen.blit(text, textRect)
 
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                text = font.render(f"{self.__board.get_highscore()}", True, constants.WHITE)
+                text = font.render(f"{self.__board.highscore}", True, constants.WHITE)
                 textRect = text.get_rect()
                 textRect.center = (530, 75)
                 self.__screen.blit(text, textRect)
@@ -143,7 +143,7 @@ class gameManager():
                 self.draw_button(constants.RESTART_BTN, constants.BROWN, 20, constants.WHITE, "Restart")
 
                 #draw save button
-                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.get_save_colour(), self.__board.get_save_status())
+                self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.save_colour, self.__board.save_status)
 
                 #draw back button
                 self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
@@ -153,7 +153,7 @@ class gameManager():
                 self.__board.animate_tiles()
 
                 #if gameover render gameover text
-                if self.__board.get_game_over():
+                if self.__board.game_over:
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
                     text = font.render("Game Over", True, constants.TEXT_GREY)
                     textRect = text.get_rect()
