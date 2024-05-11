@@ -34,7 +34,6 @@ class gameManager():
         self.__board = Board(self.__screen)
         self.__csv_file = "board.csv"
         self.__demo_file = "demo_board.csv"
-        self.__instruction_num = 0
         self.__tutorial_screens = ["Assets/Images/Tutorial_1.png"]
         
         pygame.display.set_caption("2048") 
@@ -89,6 +88,21 @@ class gameManager():
                     self.__screen.fill(constants.BACKGROUND_WHITE)
                     pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((self.__board.get_x_offset() - constants.GRID_MARGIN, self.__board.get_y_offset() - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
 
+                    #draw heading
+                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.HEADING_SIZE)
+                    text = font.render("Guide", True, constants.TEXT_GREY)
+                    textRect = text.get_rect()
+                    textRect.center = constants.HEADING_POS
+                    self.__screen.blit(text, textRect)
+
+                    #draw score menu
+                    pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((350, 40, 100, 60)))
+                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
+                    text = font.render("Score:", True, constants.WHITE)
+                    textRect = text.get_rect()
+                    textRect.center = (400, 50)
+                    self.__screen.blit(text, textRect)
+
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
                     text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
                     textRect = text.get_rect()
@@ -107,21 +121,8 @@ class gameManager():
                         textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2 + 50)
                         self.__screen.blit(text, textRect)
 
-                    #tutorial text
-                    current_instructions = []
-                    if "\n" in constants.INSTRUCTIONS[self.__instruction_num]:
-                        current_instructions = constants.INSTRUCTIONS[self.__instruction_num].split("\n")
-                    else:
-                        current_instructions = [constants.INSTRUCTIONS[self.__instruction_num]]
-
-                    for i, instruction in enumerate(current_instructions):
-                        text = font.render(instruction, True, constants.TEXT_GREY)
-                        textRect = text.get_rect()
-                        textRect.center = (250, 622 + 50*i)
-                        self.__screen.blit(text, textRect)
-
-                    #next button
-                    self.draw_button(constants.NEXT_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Next")
+                    #back button
+                    self.draw_button(constants.BACK_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Next")
 
 
             else:
@@ -189,7 +190,7 @@ class gameManager():
                 #draw save button
                 self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.get_save_colour(), self.__board.get_save_status())
 
-                #draw home button
+                #draw back button
                 self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
 
                 #draw board and tiles
@@ -225,13 +226,10 @@ class gameManager():
             btn = constants.HELP_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.help_menu()
-                
 
-            btn = constants.NEXT_BTN
+            btn = constants.BACK_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.next_btn()
-
-
+                self.__in_guide = False
 
         else: #game buttons
 
@@ -267,25 +265,9 @@ class gameManager():
     def help_menu(self):
         #Opens the guide
         self.__in_guide = True
-        self.__instruction_num = 0
         self.__board.restart()
-        self.__board.set_y_offset(50)
+        self.__board.set_y_offset(150)
         self.__board.load_file(self.__demo_file)
-
-    def next_btn(self):
-        if self.__instruction_num == 1:
-            self.__board.move((0, -1))
-        if self.__instruction_num == 2:
-            self.__board.move((-1, 0))
-        if self.__instruction_num == 4:
-            self.__board.set_state([[7,6,4,2], [3,4,1,6], [4,1,2,2], [5,2,1,3]])
-        if self.__instruction_num == 5:
-            self.__board.set_state([[10,10,4,2], [4,0,0,0], [0,0,0,0], [0,0,0,0]])
-        if self.__instruction_num == 6:
-            self.__board.move((-1,0))
-        if self.__instruction_num == 7:
-            self.__in_guide = False
-        self.__instruction_num += 1
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         # generic subroutine for drawing a button

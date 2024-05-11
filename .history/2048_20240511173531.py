@@ -225,12 +225,13 @@ class gameManager():
             btn = constants.HELP_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.help_menu()
-                
 
             btn = constants.NEXT_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.next_btn()
-
+                #self.__in_guide = False
+                if self.__instruction_num == 1:
+                    self.move((0, -1))
+                self.__instruction_num += 1
 
 
         else: #game buttons
@@ -267,25 +268,9 @@ class gameManager():
     def help_menu(self):
         #Opens the guide
         self.__in_guide = True
-        self.__instruction_num = 0
         self.__board.restart()
         self.__board.set_y_offset(50)
         self.__board.load_file(self.__demo_file)
-
-    def next_btn(self):
-        if self.__instruction_num == 1:
-            self.__board.move((0, -1))
-        if self.__instruction_num == 2:
-            self.__board.move((-1, 0))
-        if self.__instruction_num == 4:
-            self.__board.set_state([[7,6,4,2], [3,4,1,6], [4,1,2,2], [5,2,1,3]])
-        if self.__instruction_num == 5:
-            self.__board.set_state([[10,10,4,2], [4,0,0,0], [0,0,0,0], [0,0,0,0]])
-        if self.__instruction_num == 6:
-            self.__board.move((-1,0))
-        if self.__instruction_num == 7:
-            self.__in_guide = False
-        self.__instruction_num += 1
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         # generic subroutine for drawing a button

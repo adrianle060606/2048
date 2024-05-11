@@ -33,8 +33,6 @@ class gameManager():
         self.__screen = pygame.display.set_mode((constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)) 
         self.__board = Board(self.__screen)
         self.__csv_file = "board.csv"
-        self.__demo_file = "demo_board.csv"
-        self.__instruction_num = 0
         self.__tutorial_screens = ["Assets/Images/Tutorial_1.png"]
         
         pygame.display.set_caption("2048") 
@@ -75,53 +73,24 @@ class gameManager():
 
                 else:
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 40)
-                    self.__board.set_in_keydown(False)
-                
-                    if self.__board.get_saving():
-                        self.__board.save(self.__csv_file)
-                    if self.__board.get_save_delay() <= 0:
-                        self.__board.set_save_colour(constants.WHITE)
-                        self.__board.set_save_status("Save")
-                    else:
-                        self.__board.set_save_delay(self.__board.get_save_delay() - 1/constants.CLOCK_SPEED)
-
-                    #draw background
-                    self.__screen.fill(constants.BACKGROUND_WHITE)
-                    pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((self.__board.get_x_offset() - constants.GRID_MARGIN, self.__board.get_y_offset() - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
-
-                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 25)
-                    text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
+                    text = font.render("How To Play", True, constants.TEXT_GREY)
                     textRect = text.get_rect()
-                    textRect.center = (400, 75)
+                    textRect.center = (350, 300)
                     self.__screen.blit(text, textRect)
 
-                    #draw board and tiles
-                    self.__board.draw(self.__screen)
-                    self.__board.animate_tiles()
-
-                    #if gameover render gameover text
-                    if self.__board.get_game_over():
-                        font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 75)
-                        text = font.render("Game Over", True, constants.TEXT_GREY)
-                        textRect = text.get_rect()
-                        textRect.center = (constants.SCREEN_WIDTH/2, constants.SCREEN_HEIGHT/2 + 50)
-                        self.__screen.blit(text, textRect)
-
-                    #tutorial text
-                    current_instructions = []
-                    if "\n" in constants.INSTRUCTIONS[self.__instruction_num]:
-                        current_instructions = constants.INSTRUCTIONS[self.__instruction_num].split("\n")
-                    else:
-                        current_instructions = [constants.INSTRUCTIONS[self.__instruction_num]]
-
-                    for i, instruction in enumerate(current_instructions):
+                    font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 20)
+                    for i, instruction in enumerate(constants.INSTRUCTIONS):
                         text = font.render(instruction, True, constants.TEXT_GREY)
                         textRect = text.get_rect()
-                        textRect.center = (250, 622 + 50*i)
+                        textRect.center = (350, 370 + 50*i)
                         self.__screen.blit(text, textRect)
 
-                    #next button
-                    self.draw_button(constants.NEXT_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Next")
+                    myimage = pygame.image.load(self.__tutorial_screens[0])
+                    imagerect = pygame.Rect(100,100, 50, 50)
+                    self.__screen.blit(myimage, imagerect)
+
+                    #back button
+                    self.draw_button(constants.BACK_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "Back")
 
 
             else:
@@ -146,7 +115,7 @@ class gameManager():
 
                 #draw background
                 self.__screen.fill(constants.BACKGROUND_WHITE)
-                pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((self.__board.get_x_offset() - constants.GRID_MARGIN, self.__board.get_y_offset() - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
+                pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((constants.X_OFFSET - constants.GRID_MARGIN, constants.Y_OFFSET - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
 
                 #draw heading
                 font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.HEADING_SIZE)
@@ -189,7 +158,7 @@ class gameManager():
                 #draw save button
                 self.draw_button(constants.SAVE_BTN, constants.BROWN, 20, self.__board.get_save_colour(), self.__board.get_save_status())
 
-                #draw home button
+                #draw back button
                 self.draw_button(constants.HOME_BTN, constants.BROWN, 20, constants.WHITE, "Home")
 
                 #draw board and tiles
@@ -225,13 +194,10 @@ class gameManager():
             btn = constants.HELP_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                 self.help_menu()
-                
 
-            btn = constants.NEXT_BTN
+            btn = constants.BACK_BTN
             if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                self.next_btn()
-
-
+                self.__in_guide = False
 
         else: #game buttons
 
@@ -267,25 +233,6 @@ class gameManager():
     def help_menu(self):
         #Opens the guide
         self.__in_guide = True
-        self.__instruction_num = 0
-        self.__board.restart()
-        self.__board.set_y_offset(50)
-        self.__board.load_file(self.__demo_file)
-
-    def next_btn(self):
-        if self.__instruction_num == 1:
-            self.__board.move((0, -1))
-        if self.__instruction_num == 2:
-            self.__board.move((-1, 0))
-        if self.__instruction_num == 4:
-            self.__board.set_state([[7,6,4,2], [3,4,1,6], [4,1,2,2], [5,2,1,3]])
-        if self.__instruction_num == 5:
-            self.__board.set_state([[10,10,4,2], [4,0,0,0], [0,0,0,0], [0,0,0,0]])
-        if self.__instruction_num == 6:
-            self.__board.move((-1,0))
-        if self.__instruction_num == 7:
-            self.__in_guide = False
-        self.__instruction_num += 1
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         # generic subroutine for drawing a button
@@ -301,8 +248,6 @@ class Board(object):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
         self.__state = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
-        self.__x_offset = 105
-        self.__y_offset = 220
         self.__in_keydown = False
         self.__surface = surface
         self.__in_animation = False
@@ -405,22 +350,6 @@ class Board(object):
     def set_save_colour(self, save_colour):
         # Set the save colour.
         self.__save_colour = save_colour
-
-    def get_x_offset(self):
-        # Get the x offset.
-        return self.__x_offset
-
-    def set_x_offset(self, x_offset):
-        # Set the x offset.
-        self.__x_offset = x_offset
-
-    def get_y_offset(self):
-        # Get the y offset.
-        return self.__y_offset
-
-    def set_y_offset(self, y_offset):
-        # Set the y offset.
-        self.__y_offset = y_offset
 
     def get_highscore(self):
         # Get the highscore.
@@ -608,7 +537,7 @@ class Board(object):
                 if self.__state[y][x] != 0 and self.__state[y][x] <= 50:
                     self.draw_tile(constants.TILE_WIDTH * x, constants.TILE_WIDTH * y, str(2 ** self.__state[y][x]))
                 else:
-                    pygame.draw.rect(surface, constants.TILE_COLOURS[0], pygame.Rect((constants.TILE_WIDTH * x + self.__x_offset, constants.TILE_WIDTH * y + self.__y_offset, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
+                    pygame.draw.rect(surface, constants.TILE_COLOURS[0], pygame.Rect((constants.TILE_WIDTH * x + constants.X_OFFSET, constants.TILE_WIDTH * y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
 
     def draw_tile(self, x, y, tile_value):
         # draws a tile
@@ -619,11 +548,11 @@ class Board(object):
         else:
             font_colour = constants.WHITE
 
-        pygame.draw.rect(self.__surface, constants.TILE_COLOURS[tile_num], pygame.Rect((x + self.__x_offset, y + self.__y_offset, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
+        pygame.draw.rect(self.__surface, constants.TILE_COLOURS[tile_num], pygame.Rect((x + constants.X_OFFSET, y + constants.Y_OFFSET, constants.TILE_WIDTH - constants.TILE_BORDER, constants.TILE_WIDTH-constants.TILE_BORDER)))
         font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.TILE_FONT_SIZE)
         text = font.render(tile_value, True, font_colour)
         textRect = text.get_rect()
-        textRect.center = (x + constants.TILE_WIDTH // 2 + self.__x_offset, y + constants.TILE_WIDTH // 2 + self.__y_offset)
+        textRect.center = (x + constants.TILE_WIDTH // 2 + constants.X_OFFSET, y + constants.TILE_WIDTH // 2 + constants.Y_OFFSET)
         self.__surface.blit(text, textRect)
     
     def handle_keys(self, event):

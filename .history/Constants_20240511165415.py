@@ -30,6 +30,8 @@ TILE_COLOURS = {
 TILE_WIDTH = 120
 TILES_ACROSS = 4
 
+
+
 GRID_MARGIN = 15
 
 TILE_FONT_SIZE = 50
@@ -49,7 +51,7 @@ HEADING_POS = (200, 60)
 PLAY_BTN = (260, 320, 180, 65)
 LOAD_BTN = (260, 400, 180, 65)
 HELP_BTN = (260, 480, 180, 65)
-NEXT_BTN = (480, 610, 180, 65)
+BACK_BTN = (260, 580, 180, 65)
 HOME_BTN = (100, 135, 120, 40)
 SAVE_BTN = (275, 135, 120, 40)
 RESTART_BTN = (450, 135, 120, 40)
@@ -57,13 +59,9 @@ RESTART_BTN = (450, 135, 120, 40)
 HIGHSCORE_FILE = "highscore.txt"
 
 INSTRUCTIONS = [
-    "Welcome to 2048!",
-    "Use arrow keys or WASD to\nmove tiles in any direction.",
-    "When two tiles with the same\nnumber touch, they merge into one.",
-    "Click the 'save'\nbutton to save progress",
-    "In the menu, click 'load\ngame' to resume game",
-    "The game ends when\nyou can no longer move",
-    "Be victorious and\nget to the 2048 tile!",
+    "Use arrow keys or WASD to move tiles in any direction.",
+    "When two tiles with the same number touch, they merge into one.",
+    "Be victorious and get to the 2048 tile!",
     "I wish you luck!",
 ]
 
