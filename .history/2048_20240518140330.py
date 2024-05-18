@@ -295,7 +295,6 @@ class gameManager():
         self.__instruction_num = 0
         self.__board.restart()
         self.__board.set_y_offset(50)
-        self.__board.set_tutorial_board(True)
         self.__board.load_file(self.__demo_file)
 
     def next_btn(self):
@@ -343,7 +342,7 @@ class gameManager():
         self.__screen.blit(text, textRect)
 
 class Board(object):
-    def __init__(self, surface):
+    def __init__(self, surface, tutorial):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
         self.__state = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -544,9 +543,8 @@ class Board(object):
                                 tile_value += 1
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
-                                if not self.__tutorial_board:
-                                    self.__score += 2**abs(tile_value)
-                                    self.update_highscore()
+                                self.__score += 2**abs(tile_value)
+                                self.update_highscore()
 
                             # if passes collision detection then move
                             valid_move = True
@@ -632,8 +630,7 @@ class Board(object):
         if len(self.__animations) == 0:
             if self.__in_animation:
                 self.__in_animation = False
-                if not self.__tutorial_board:
-                    self.new_piece()
+                self.new_piece()
 
     def new_piece(self):
         # generates a new random piece in random position

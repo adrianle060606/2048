@@ -343,7 +343,7 @@ class gameManager():
         self.__screen.blit(text, textRect)
 
 class Board(object):
-    def __init__(self, surface):
+    def __init__(self, surface, tutorial):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
         self.__state = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]

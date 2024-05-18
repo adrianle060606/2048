@@ -60,8 +60,8 @@ HIGHSCORE_FILE = "highscore.txt"
 INSTRUCTIONS = [
     "Welcome to 2048!",
     "Use arrow keys or WASD to\nmove tiles in any direction.",
-    "When two tiles with the same\nnumber collide, they\nmerge into one.",
-    "When two tiles with the same\nnumber collide, they\nmerge into one.",
+    "When two tiles with the same\nnumber touch, they\nmerge into one.",
+    "When two tiles with the same\nnumber touch, they\nmerge into one.",
     "Click the 'save'\nbutton to save progress",
     "In the menu, click 'load\ngame' to resume game",
     "The game ends when\nyou can no longer move",

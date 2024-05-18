@@ -343,7 +343,7 @@ class gameManager():
         self.__screen.blit(text, textRect)
 
 class Board(object):
-    def __init__(self, surface):
+    def __init__(self, surface, tutorial):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
         self.__state = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
@@ -632,8 +632,7 @@ class Board(object):
         if len(self.__animations) == 0:
             if self.__in_animation:
                 self.__in_animation = False
-                if not self.__tutorial_board:
-                    self.new_piece()
+                self.new_piece()
 
     def new_piece(self):
         # generates a new random piece in random position

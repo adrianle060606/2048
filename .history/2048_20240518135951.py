@@ -295,7 +295,6 @@ class gameManager():
         self.__instruction_num = 0
         self.__board.restart()
         self.__board.set_y_offset(50)
-        self.__board.set_tutorial_board(True)
         self.__board.load_file(self.__demo_file)
 
     def next_btn(self):
@@ -350,7 +349,6 @@ class Board(object):
         self.__x_offset = 105
         self.__y_offset = 220
         self.__in_keydown = False
-        self.__tutorial_board = False
         self.__surface = surface
         self.__in_animation = False
         self.__animations = []
@@ -477,14 +475,6 @@ class Board(object):
         # Set the highscore.
         self.__highscore = highscore
 
-    def get_tutorial_board(self):
-        # Get the highscore.
-        return self.__tutorial_board
-
-    def set_tutorial_board(self, tutorial_board):
-        # Set the highscore.
-        self.__tutorial_board = tutorial_board
-
     def move(self, direction):
         # moves tiles in specified direction while checking for collsion
         x_range = None
@@ -544,9 +534,8 @@ class Board(object):
                                 tile_value += 1
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
-                                if not self.__tutorial_board:
-                                    self.__score += 2**abs(tile_value)
-                                    self.update_highscore()
+                                self.__score += 2**abs(tile_value)
+                                self.update_highscore()
 
                             # if passes collision detection then move
                             valid_move = True
@@ -632,8 +621,7 @@ class Board(object):
         if len(self.__animations) == 0:
             if self.__in_animation:
                 self.__in_animation = False
-                if not self.__tutorial_board:
-                    self.new_piece()
+                self.new_piece()
 
     def new_piece(self):
         # generates a new random piece in random position

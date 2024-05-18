@@ -7,11 +7,12 @@ import time
 import math
 import csv
 
-# fix bug when spamming tutorial keys
+# make interactive tutorial
 # disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
 # add warning that saving a game will override an old game
+# add to the guide, make it interactable and include UI techniques such as searchable help
 
 # documentation format:
 # 1. author name
@@ -34,9 +35,9 @@ class gameManager():
         self.__csv_file = "board.csv"
         self.__demo_file = "demo_board.csv"
         self.__instruction_num = 0
-        #myimage = pygame.image.load("Assets/Images/arrow-forward.jpeg")
-        #self.__imagerect = myimage.get_rect()
-        #self.__new_img = pygame.transform.scale_by(myimage, (0.1, 0.1))
+        myimage = pygame.image.load("Assets/Images/arrow-forward.jpeg")
+        self.__imagerect = myimage.get_rect()
+        self.__new_img = pygame.transform.scale_by(myimage, (0.1, 0.1))
         
         pygame.display.set_caption("2048") 
 
@@ -130,13 +131,12 @@ class gameManager():
                     for i, instruction in enumerate(current_instructions):
                         text = font.render(instruction, True, constants.TEXT_GREY)
                         textRect = text.get_rect()
-                        textRect.center = (350, 590 + 50*i)
+                        textRect.center = (250, 622 + 50*i)
                         self.__screen.blit(text, textRect)
 
                     #next button
-                    self.draw_button(constants.NEXT_BTN, constants.TILE_COLOURS[11], 20, constants.WHITE, "Next")
-                    self.draw_button(constants.BACK_BTN, constants.TILE_COLOURS[11], 20, constants.WHITE, "Back")
-                    #self.__screen.blit(self.__new_img, pygame.Rect(constants.NEXT_BTN[0] - 10, constants.NEXT_BTN[1] - 10,100,100))
+                    self.draw_button(constants.NEXT_BTN, constants.TILE_COLOURS[11], 30, constants.WHITE, "")
+                    self.__screen.blit(self.__new_img, pygame.Rect(constants.NEXT_BTN[0] - 10, constants.NEXT_BTN[1] - 10,100,100))
 
 
             else:
@@ -232,13 +232,8 @@ class gameManager():
 
             if self.__in_guide:
                 btn = constants.NEXT_BTN
-                
                 if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
                     self.next_btn()
-
-                btn = constants.BACK_BTN
-                if pos[0] >= btn[0] and pos[0] <= btn[0] + btn[2] and pos[1] >= btn[1] and pos[1] <= btn[1] + btn[3]:
-                    self.back_btn()
             else:
 
                 btn = constants.PLAY_BTN
@@ -295,42 +290,22 @@ class gameManager():
         self.__instruction_num = 0
         self.__board.restart()
         self.__board.set_y_offset(50)
-        self.__board.set_tutorial_board(True)
         self.__board.load_file(self.__demo_file)
 
     def next_btn(self):
-        if not self.__board.get_in_animation():
-            if self.__instruction_num == 1:
-                self.__board.move((0, -1))
-                self.__board.set_in_keydown(True)
-            elif self.__instruction_num == 2:
-                self.__board.set_in_keydown(True)
-                self.__board.move((-1, 0))
-            elif self.__instruction_num == 5:
-                self.__board.set_state([[7,6,4,2], [3,8,1,6], [4,1,2,4], [5,2,9,3]])
-            elif self.__instruction_num == 6:
-                self.__board.set_state([[10,0,0,10], [0,0,0,0], [0,0,0,0], [0,0,0,0]])
-            elif self.__instruction_num == 7:
-                self.__board.set_in_keydown(True)
-                self.__board.move((-1,0))
-            elif self.__instruction_num == 9:
-                self.__in_guide = False
-            self.__instruction_num += 1
-
-    def back_btn(self):
-        if self.__instruction_num == 0:
-            self.__in_guide = False
-        elif self.__instruction_num == 2:
-            self.__board.load_file(self.__demo_file)
-        elif self.__instruction_num == 3:
-            self.__board.set_state([[0,1,1,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]])
-        elif self.__instruction_num == 6:
-            self.__board.set_state([[2,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]])
-        elif self.__instruction_num == 7:
+        if self.__instruction_num == 1:
+            self.__board.move((0, -1))
+        if self.__instruction_num == 2:
+            self.__board.move((-1, 0))
+        if self.__instruction_num == 5:
             self.__board.set_state([[7,6,4,2], [3,8,1,6], [4,1,2,4], [5,2,9,3]])
-        elif self.__instruction_num == 8:
+        if self.__instruction_num == 6:
             self.__board.set_state([[10,0,0,10], [0,0,0,0], [0,0,0,0], [0,0,0,0]])
-        self.__instruction_num -= 1
+        if self.__instruction_num == 7:
+            self.__board.move((-1,0))
+        if self.__instruction_num == 8:
+            self.__in_guide = False
+        self.__instruction_num += 1
 
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
@@ -350,7 +325,6 @@ class Board(object):
         self.__x_offset = 105
         self.__y_offset = 220
         self.__in_keydown = False
-        self.__tutorial_board = False
         self.__surface = surface
         self.__in_animation = False
         self.__animations = []
@@ -477,14 +451,6 @@ class Board(object):
         # Set the highscore.
         self.__highscore = highscore
 
-    def get_tutorial_board(self):
-        # Get the highscore.
-        return self.__tutorial_board
-
-    def set_tutorial_board(self, tutorial_board):
-        # Set the highscore.
-        self.__tutorial_board = tutorial_board
-
     def move(self, direction):
         # moves tiles in specified direction while checking for collsion
         x_range = None
@@ -544,9 +510,8 @@ class Board(object):
                                 tile_value += 1
                                 tile_value = -tile_value # mark an already converted block with a negative sign
                                 combined = True
-                                if not self.__tutorial_board:
-                                    self.__score += 2**abs(tile_value)
-                                    self.update_highscore()
+                                self.__score += 2**abs(tile_value)
+                                self.update_highscore()
 
                             # if passes collision detection then move
                             valid_move = True
@@ -632,8 +597,7 @@ class Board(object):
         if len(self.__animations) == 0:
             if self.__in_animation:
                 self.__in_animation = False
-                if not self.__tutorial_board:
-                    self.new_piece()
+                self.new_piece()
 
     def new_piece(self):
         # generates a new random piece in random position
