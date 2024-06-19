@@ -9,6 +9,8 @@ import csv
 import json
 
 
+# add tutorial on first file open
+# show that all blocks move in one direction
 # disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
@@ -38,8 +40,6 @@ class gameManager():
         2 weeks ago comments added to every subroutine
         2 weeks ago Name Mangling working
         last week Interactive guide finished
-        1 week ago I have made it so that the guide plays on the 
-        first time user opens application and changed 2048 logo
     '''
     def __init__(self):
         #Initialize the game manager.

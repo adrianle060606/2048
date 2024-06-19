@@ -9,6 +9,8 @@ import csv
 import json
 
 
+# add tutorial on first file open
+# show that all blocks move in one direction
 # disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
@@ -38,8 +40,6 @@ class gameManager():
         2 weeks ago comments added to every subroutine
         2 weeks ago Name Mangling working
         last week Interactive guide finished
-        1 week ago I have made it so that the guide plays on the 
-        first time user opens application and changed 2048 logo
     '''
     def __init__(self):
         #Initialize the game manager.
@@ -318,7 +318,6 @@ class gameManager():
 
     def help_menu(self):
         #Opens the guide
-        self.write_completed_tutorial()
         self.__in_guide = True
         self.__instruction_num = 0
         self.__board.restart()
@@ -363,17 +362,8 @@ class gameManager():
     def has_completed_tutorial(self):
         with open("data.json", "r") as f:
             data = json.load(f)
-            return data["completed-tutorial"]
-        
-    def write_completed_tutorial(self):
-
-        with open("data.json", "r") as f:
-            data = json.load(f)
-            data["completed-tutorial"] = True
-
-        with open("data.json", "w") as f:
-            json.dump(data, f)
-            
+            print(data)
+        return False
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         # generic subroutine for drawing a button

@@ -6,9 +6,11 @@ import copy
 import time
 import math
 import csv
-import json
 
 
+# add tutorial on first file open
+# show that all blocks move in one direction
+# make a logo for the game
 # disable saving game when game over
 # add to death message to press restart to start new game
 # add message that game will not automatically be saved by going home
@@ -38,8 +40,6 @@ class gameManager():
         2 weeks ago comments added to every subroutine
         2 weeks ago Name Mangling working
         last week Interactive guide finished
-        1 week ago I have made it so that the guide plays on the 
-        first time user opens application and changed 2048 logo
     '''
     def __init__(self):
         #Initialize the game manager.
@@ -181,18 +181,10 @@ class gameManager():
                 self.__screen.fill(constants.BACKGROUND_WHITE)
                 pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((self.__board.get_x_offset() - constants.GRID_MARGIN, self.__board.get_y_offset() - constants.GRID_MARGIN, constants.TILES_ACROSS*constants.TILE_WIDTH + constants.GRID_MARGIN * 2, constants.TILES_ACROSS*constants.TILE_WIDTH  + constants.GRID_MARGIN * 2)))
 
-
                 #draw 2048 logo
-                '''logo_rect = self.__logo.get_rect()
-                scaled_logo = pygame.transform.scale(self.__logo, (288,49))
-                self.__screen.blit(scaled_logo, (constants.HEADING_POS[0] - logo_rect.width/2, constants.HEADING_POS[1] - logo_rect.height/2))'''
-
-                #draw heading
-                font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', constants.HEADING_SIZE)
-                text = font.render("2048", True, constants.TEXT_GREY)
-                textRect = text.get_rect()
-                textRect.center = constants.HEADING_POS
-                self.__screen.blit(text, textRect)
+                logo_rect = self.__logo.get_rect()
+                scaled_logo = pygame.transform.scale(self.__logo, (200,100))
+                self.__screen.blit(self.__logo, (constants.HEADING_POS[0] - logo_rect.width/2, constants.HEADING_POS[1] - logo_rect.height/2))
 
                 #draw score menu
                 pygame.draw.rect(self.__screen, constants.BACKGROUND_GREY, pygame.Rect((350, 40, 100, 60)))
@@ -303,11 +295,8 @@ class gameManager():
 
     def new_game(self):
         # starts new game
-        if self.has_completed_tutorial():
-            self.__board.restart()
-            self.__in_menu = False
-        else:
-            self.help_menu()
+        self.__board.restart()
+        self.__in_menu = False
 
     def load_game(self):
         # loads saved game
@@ -318,7 +307,6 @@ class gameManager():
 
     def help_menu(self):
         #Opens the guide
-        self.write_completed_tutorial()
         self.__in_guide = True
         self.__instruction_num = 0
         self.__board.restart()
@@ -360,20 +348,6 @@ class gameManager():
             self.__board.set_state([[10,0,0,10], [0,0,0,0], [0,0,0,0], [0,0,0,0]])
         self.__instruction_num -= 1
 
-    def has_completed_tutorial(self):
-        with open("data.json", "r") as f:
-            data = json.load(f)
-            return data["completed-tutorial"]
-        
-    def write_completed_tutorial(self):
-
-        with open("data.json", "r") as f:
-            data = json.load(f)
-            data["completed-tutorial"] = True
-
-        with open("data.json", "w") as f:
-            json.dump(data, f)
-            
 
     def draw_button(self, btn_position, btn_colour, font_size, font_colour, text_content):
         # generic subroutine for drawing a button
@@ -383,8 +357,6 @@ class gameManager():
         textRect = text.get_rect()
         textRect.center = (0.5*(2*btn_position[0] + btn_position[2]), 0.5*(2*btn_position[1] + btn_position[3]))
         self.__screen.blit(text, textRect)
-
-
 
 class Board(object):
     def __init__(self, surface):
