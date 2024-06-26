@@ -9,16 +9,17 @@ import csv
 import json
 
 
+# success evaluation criteria?
 # put a screenshot in every thing in the installation manual
-# delete pictures from table of contents
+# reset highscore, board.csv, and data.json, redo python.exe
 # test for bugs on windows
 # change blue headings
 # delete phased out code
 # make sure commands for reference manual are in order
 # go through marking criteria
-# compare against exemplars
-# reset highscore, board.csv, and data.json, redo python.exe
-
+# change style
+#Your last logbook entry should include a one-page evaluation of the project.  Include all advantages, disadvantages, major problems encountered and how they were solved. Include what you have learned from this task.  Include a comparison of your final project to the evaluation criteria set in AT1.
+# use of data structures: arrays, lists, dictionaries, classes, use of sophisticated nested loops, 
 
 # documentation format:
 # 1. author name

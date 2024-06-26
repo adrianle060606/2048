@@ -10,6 +10,8 @@ import json
 
 
 # put a screenshot in every thing in the installation manual
+# justifying everything in user manual
+# reset highscore, board.csv, and data.json, redo python.exe
 # delete pictures from table of contents
 # test for bugs on windows
 # change blue headings
@@ -17,8 +19,7 @@ import json
 # make sure commands for reference manual are in order
 # go through marking criteria
 # compare against exemplars
-# reset highscore, board.csv, and data.json, redo python.exe
-
+# use of data structures: arrays, lists, dictionaries, classes, use of sophisticated nested loops, 
 
 # documentation format:
 # 1. author name

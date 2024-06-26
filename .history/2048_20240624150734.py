@@ -9,16 +9,13 @@ import csv
 import json
 
 
-# put a screenshot in every thing in the installation manual
-# delete pictures from table of contents
-# test for bugs on windows
+# reset highscore, board.csv, and data.json
+# test for bugs
 # change blue headings
 # delete phased out code
+# check logbook with Mr Jaques
 # make sure commands for reference manual are in order
 # go through marking criteria
-# compare against exemplars
-# reset highscore, board.csv, and data.json, redo python.exe
-
 
 # documentation format:
 # 1. author name

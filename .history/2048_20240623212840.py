@@ -9,16 +9,10 @@ import csv
 import json
 
 
-# put a screenshot in every thing in the installation manual
-# delete pictures from table of contents
-# test for bugs on windows
-# change blue headings
-# delete phased out code
-# make sure commands for reference manual are in order
-# go through marking criteria
-# compare against exemplars
-# reset highscore, board.csv, and data.json, redo python.exe
-
+# add to death message to press restart to start new game
+# add message that game will not automatically be saved by going home
+# add warning that saving a game will override an old game
+# document second class
 
 # documentation format:
 # 1. author name
@@ -31,24 +25,20 @@ import json
 class gameManager():
     '''
     1. Author: Adrian Le
-    2. Date: 10/5/2024
+    2. Date: 18/5/2024
     3. Purpose of Module: Manage game states and overarching control of program
     4. Special Notes: The attributes can only be editted from within the class, 
     not from the board class
     5. Version History:
-        10/4/24: 
-            Class created to control UI states
-            UI working and polished
-            game saving and loading working
-            highscore file saving system working 
-        11/5/24:
-            comments added to every subroutine
-            Name Mangling working
-        23/5/24: 
-            Interactive guide finished
-        12/6/24: 
-            I have made it so that the guide plays on the first time user opens application     
-            changed 2048 logo
+        3 months ago 2048 finished
+        4 months ago First Prototype Finished
+        last month game saving and loading working
+        last month highscore file saving system working 
+        2 weeks ago comments added to every subroutine
+        2 weeks ago Name Mangling working
+        last week Interactive guide finished
+        1 week ago I have made it so that the guide plays on the 
+        first time user opens application and changed 2048 logo
     '''
     def __init__(self):
         #Initialize the game manager.
@@ -118,6 +108,12 @@ class gameManager():
 
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 30)
                     text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
+
+                    
+
+
+                    
+                    
 
                     if self.__instruction_num == 4:
                         #draw save button
@@ -330,7 +326,6 @@ class gameManager():
         self.__board.load_file(self.__demo_file)
 
     def next_btn(self):
-        # goes forward a step in the tutorial but goes to main menu if it is the last step
         if not self.__board.get_in_animation():
             if self.__instruction_num == 1:
                 self.__board.move((0, -1))
@@ -350,7 +345,6 @@ class gameManager():
             self.__instruction_num += 1
 
     def back_btn(self):
-        # goes back a step in the tutorial but goes to main menu if it is the first step
         if self.__instruction_num == 0:
             self.__in_guide = False
         elif self.__instruction_num == 2:
@@ -366,13 +360,12 @@ class gameManager():
         self.__instruction_num -= 1
 
     def has_completed_tutorial(self):
-        # checks whether user has completed tutorial for the first time
         with open("data.json", "r") as f:
             data = json.load(f)
             return data["completed-tutorial"]
         
     def write_completed_tutorial(self):
-        # sets the auto-load setting for the tutorial to false
+
         with open("data.json", "r") as f:
             data = json.load(f)
             data["completed-tutorial"] = True
@@ -393,29 +386,6 @@ class gameManager():
 
 
 class Board(object):
-    '''
-    1. Author: Adrian Le
-    2. Date: 24/1/24
-    3. Purpose of Module: Runs a game for 2048 by managing game attributes, game mechanics and scores
-    4. Special Notes: This class uses name mangling and its
-      attributes can only be accessed through the getters and setters
-    5. Version History:
-        24/1/24: 
-            First Prototype Finished for 2048 
-            Animations working
-            Mechanics working
-        10/4/24: 
-            scoring
-            restarting mechanics
-            highscore file saving system working 
-        11/5/24:
-            comments added to every subroutine
-            Name Mangling working and getters and setters updated
-        23/5/24: 
-            Interactive guide finished implemented
-    '''
-
-
     def __init__(self, surface):
         # Initialize the game board.
         #for the game board state: 0 = empty, 1 = 2 tile, 2 = 4 tile, 3 = 8 tile etc.
@@ -595,9 +565,20 @@ class Board(object):
                     while not finished_moving:
                         
                         #collision detection
-                        finished_moving = self.will_collide(x_target, y_target, tile_value, combined)
 
+                        # y collision detection
+                        if y_target > constants.TILES_ACROSS - 1 or y_target < 0 :
+                            finished_moving = True
+                        
+                        # x collision detection
+                        elif x_target > constants.TILES_ACROSS - 1 or x_target < 0:
+                            finished_moving = True
 
+                        # check if the tile doesn't clash with another tile
+                        elif self.temp_state[y_target][x_target] != tile_value and self.temp_state[y_target][x_target] != 0:
+                            finished_moving = True
+                        elif self.temp_state[y_target][x_target] == tile_value and combined:
+                            finished_moving = True
 
                         if not finished_moving:
 
@@ -651,26 +632,7 @@ class Board(object):
         for y in range(len(self.__state)):
             for x in range(len(self.__state[y])):
                 self.__state[y][x] = abs(self.temp_state[y][x])
-    
-    def will_collide(self, x_target, y_target, tile_value, combined):
-        # checks whether if tile moving in that direction will collide
-        # y collision detection
-        collided = False
-        if y_target > constants.TILES_ACROSS - 1 or y_target < 0 :
-            collided = True
         
-        # x collision detection
-        elif x_target > constants.TILES_ACROSS - 1 or x_target < 0:
-            collided = True
-
-        # check if the tile doesn't clash with another tile
-        elif self.temp_state[y_target][x_target] != tile_value and self.temp_state[y_target][x_target] != 0:
-            collided = True
-        elif self.temp_state[y_target][x_target] == tile_value and combined:
-            collided = True
-
-        return collided
-
     def add_animation(self, init_pos, final_pos, init_tile_value, final_tile_value, direction):
         #adds tile to queue of animations with a specific start and end position and tile value
         

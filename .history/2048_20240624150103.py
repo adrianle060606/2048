@@ -9,16 +9,13 @@ import csv
 import json
 
 
-# put a screenshot in every thing in the installation manual
-# delete pictures from table of contents
-# test for bugs on windows
+# reset highscore, board.csv, and data.json
+# test for bugs
 # change blue headings
-# delete phased out code
+# modularise the code
+# check logbook with Mr Jaques
 # make sure commands for reference manual are in order
 # go through marking criteria
-# compare against exemplars
-# reset highscore, board.csv, and data.json, redo python.exe
-
 
 # documentation format:
 # 1. author name
@@ -118,6 +115,12 @@ class gameManager():
 
                     font = pygame.font.Font('Assets/Fonts/clear_sans_bold.ttf', 30)
                     text = font.render(f"{self.__board.get_score()}", True, constants.WHITE)
+
+                    
+
+
+                    
+                    
 
                     if self.__instruction_num == 4:
                         #draw save button
@@ -330,7 +333,6 @@ class gameManager():
         self.__board.load_file(self.__demo_file)
 
     def next_btn(self):
-        # goes forward a step in the tutorial but goes to main menu if it is the last step
         if not self.__board.get_in_animation():
             if self.__instruction_num == 1:
                 self.__board.move((0, -1))
@@ -350,7 +352,6 @@ class gameManager():
             self.__instruction_num += 1
 
     def back_btn(self):
-        # goes back a step in the tutorial but goes to main menu if it is the first step
         if self.__instruction_num == 0:
             self.__in_guide = False
         elif self.__instruction_num == 2:
@@ -366,7 +367,7 @@ class gameManager():
         self.__instruction_num -= 1
 
     def has_completed_tutorial(self):
-        # checks whether user has completed tutorial for the first time
+        # checks whether user has completed tutorial
         with open("data.json", "r") as f:
             data = json.load(f)
             return data["completed-tutorial"]
@@ -595,9 +596,20 @@ class Board(object):
                     while not finished_moving:
                         
                         #collision detection
-                        finished_moving = self.will_collide(x_target, y_target, tile_value, combined)
 
+                        # y collision detection
+                        if y_target > constants.TILES_ACROSS - 1 or y_target < 0 :
+                            finished_moving = True
+                        
+                        # x collision detection
+                        elif x_target > constants.TILES_ACROSS - 1 or x_target < 0:
+                            finished_moving = True
 
+                        # check if the tile doesn't clash with another tile
+                        elif self.temp_state[y_target][x_target] != tile_value and self.temp_state[y_target][x_target] != 0:
+                            finished_moving = True
+                        elif self.temp_state[y_target][x_target] == tile_value and combined:
+                            finished_moving = True
 
                         if not finished_moving:
 
@@ -651,26 +663,7 @@ class Board(object):
         for y in range(len(self.__state)):
             for x in range(len(self.__state[y])):
                 self.__state[y][x] = abs(self.temp_state[y][x])
-    
-    def will_collide(self, x_target, y_target, tile_value, combined):
-        # checks whether if tile moving in that direction will collide
-        # y collision detection
-        collided = False
-        if y_target > constants.TILES_ACROSS - 1 or y_target < 0 :
-            collided = True
         
-        # x collision detection
-        elif x_target > constants.TILES_ACROSS - 1 or x_target < 0:
-            collided = True
-
-        # check if the tile doesn't clash with another tile
-        elif self.temp_state[y_target][x_target] != tile_value and self.temp_state[y_target][x_target] != 0:
-            collided = True
-        elif self.temp_state[y_target][x_target] == tile_value and combined:
-            collided = True
-
-        return collided
-
     def add_animation(self, init_pos, final_pos, init_tile_value, final_tile_value, direction):
         #adds tile to queue of animations with a specific start and end position and tile value
         
